@@ -25,7 +25,8 @@ else
 	exit
 fi
 
-date +'VERSION=%Y%m%d%H%M%S' >> ../dist/.env
+git show --format='VERSION=%h' --no-patch >> ../dist/.env
+date +'DEPLOY_DATETIME=%Y/%m/%d_%H:%M:%S' >> ../dist/.env
 
 echo "DIR:" $dir
 echo "MODE:" $1

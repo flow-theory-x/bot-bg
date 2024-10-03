@@ -12,12 +12,23 @@ export const handler = async (event) => {
           "dynamoList updated processing | VER." +
             CONST.API_ENV +
             "-" +
-            CONST.VERSION
+            CONST.VERSION +
+            "[" +
+            CONST.DEPLOY_DATETIME +
+            "]"
         );
         await controller.dynamoUpdate();
         break;
       case "discord-message":
-        console.log("discord-message" + CONST.API_ENV + "-" + CONST.VERSION);
+        console.log(
+          "discord-message" +
+            CONST.API_ENV +
+            "-" +
+            CONST.VERSION +
+            "[" +
+            CONST.DEPLOY_DATETIME +
+            "]"
+        );
         console.dir(message);
         await discordService.sendDiscordMessage(
           message.params.message,
@@ -26,7 +37,13 @@ export const handler = async (event) => {
         break;
       case "discord-direct-message":
         console.log(
-          "discord-Direct-message" + CONST.API_ENV + "-" + CONST.VERSION
+          "discord-Direct-message" +
+            CONST.API_ENV +
+            "-" +
+            CONST.VERSION +
+            "[" +
+            CONST.DEPLOY_DATETIME +
+            "]"
         );
         console.dir(message);
         await discordService.sendDiscordDm(
@@ -35,7 +52,15 @@ export const handler = async (event) => {
         );
         break;
       case "nft-getkey":
-        console.log("NFT| GETKEY." + CONST.API_ENV + "-" + CONST.VERSION);
+        console.log(
+          "NFT| GETKEY." +
+            CONST.API_ENV +
+            "-" +
+            CONST.VERSION +
+            "[" +
+            CONST.DEPLOY_DATETIME +
+            "]"
+        );
         console.dir(message);
         const response = await fetch(
           "https://ehfm6q914a.execute-api.ap-northeast-1.amazonaws.com/getkey/" +

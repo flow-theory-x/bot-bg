@@ -5,6 +5,7 @@ export const CONST = {
   API_ENV: process.env.API_ENV,
   API_URL: process.env.API_URL,
   VERSION: process.env.VERSION,
+  DEPLOY_DATETIME: process.env.DEPLOY_DATETIME,
   SERVER_INFO: process.env.SERVER_INFO,
   PROVIDER_URL: process.env.PROVIDER_URL,
   SQS_QUEUE_URL: process.env.SQS_QUEUE_URL,
@@ -20,41 +21,8 @@ export const CONST = {
   DYNAMO_TABLE_PREFIX: process.env.DYNAMO_TABLE_PREFIX,
   DYNAMO_SOFT_DELETE: process.env.DYNAMO_SOFT_DELETE,
   DYNAMO_WRITE_WAIT_TIME: 200,
+  roles: {},
 
   RETRY_WAIT: 500,
   RETRY_LIMIT: 2,
-  roles: {},
-
-  // 暫定表示
-  CONTENTS: {
-    TITLE: "<h1>DISCORD BOT API | ENV:" + process.env.API_ENV + "</h1>",
-    DEVTITLE: "<h1>DEVELOPER TOOL | ENV:" + process.env.API_ENV + "</h1>",
-    MENU: {
-      TOP:
-        "<div>" +
-        '<a href="/discord">discord</a>' +
-        ' | <a href="/notion">notion</a>' +
-        ' | <a href="/member">memberDB</a>' +
-        "</div>",
-      DEV:
-        "<div>" +
-        ' <a href="/list/member">list</a>' +
-        ' | <a href="/read/member/1">read sample</a>' +
-        ' | <a href="/write/member/1/sample/testNote">create sample</a>' +
-        ' | <a href="/update/member/1/UpdateNote">update sample</a>' +
-        ' | <a href="/delete/member/1">delete sample</a>' +
-        ' | <a href="/create/member">createTable</a>' +
-        "</div>",
-      NOTION:
-        "<div>" +
-        ' <a href="/notion">list</a>' +
-        ' | <a href="/notion/update">update</a></div>' +
-        "</div>",
-      MEMBER:
-        "<div>" +
-        ' <a href="/member">list</a>' +
-        ' | <a href="/member/update">update</a>' +
-        "</div>",
-    },
-  },
 };
