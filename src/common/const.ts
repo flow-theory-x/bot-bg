@@ -9,6 +9,7 @@ export const CONST = {
   SERVER_INFO: process.env.SERVER_INFO,
   PROVIDER_URL: process.env.PROVIDER_URL,
   SQS_QUEUE_URL: process.env.SQS_QUEUE_URL,
+  DISCORD_API_ID: process.env.DISCORD_API_ID,
   DISCORD_GUILD_ID: process.env.DISCORD_GUILD_ID,
   DISCORD_BOT_KEY: process.env.DISCORD_BOT_KEY,
   DISCORD_PUB_KEY: process.env.DISCORD_PUB_KEY,

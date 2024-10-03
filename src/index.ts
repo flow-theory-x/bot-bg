@@ -19,6 +19,22 @@ export const handler = async (event) => {
         );
         await controller.dynamoUpdate();
         break;
+      case "discord-response":
+        console.log(
+          "discord-response" +
+            CONST.API_ENV +
+            "-" +
+            CONST.VERSION +
+            "[" +
+            CONST.DEPLOY_DATETIME +
+            "]"
+        );
+        console.dir(message);
+        await discordService.sendDiscordResponse(
+          message.params.message,
+          message.params.mesToken
+        );
+        break;
       case "discord-message":
         console.log(
           "discord-message" +

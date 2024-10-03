@@ -1,6 +1,5 @@
 import { CONST } from "../common/const.js";
 import { setTimeout } from "timers/promises";
-import memberModel from "../model/members.js";
 const guild_id = CONST.DISCORD_GUILD_ID;
 const bot_key = CONST.DISCORD_BOT_KEY;
 let json = [];
@@ -162,11 +161,22 @@ const getDisplayData = async () => {
   return result;
 };
 
+const sendDiscordResponse = async (message, mesToken) => {
+  if (CONST.API_ENV != "PRD") {
+    message = message + "\nver." + CONST.VERSION;
+  }
+  const url = `https://discord.com/api/webhooks/${CONST.DISCORD_API_ID}/${mesToken}`;
+  const body = {
+    content: message,
+  };
+  const result = await sendApi(url, "post", body);
+  return result;
+};
+
 const sendDiscordMessage = async (message, channelId) => {
   if (CONST.API_ENV != "PRD") {
     message = message + "\nver." + CONST.VERSION;
   }
-
   const url = "https://discord.com/api/v10/channels/" + channelId + "/messages";
   const body = {
     content: message,
@@ -195,6 +205,7 @@ const sendDiscordDm = async (message, userId) => {
 
 const discordService = {
   sendApi,
+  sendDiscordResponse,
   sendDiscordMessage,
   sendDiscordDm,
   getList,
