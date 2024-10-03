@@ -1,10 +1,15 @@
 import { CONST } from "./common/const.js";
 import discordService from "./service/discord.js";
+import controller from "./service/controller.js";
 
 export const handler = async (event) => {
   for (let key in event.Records) {
     const message = JSON.parse(event.Records[key].body);
     switch (message.function) {
+      case "system-connect":
+        const req = JSON.parse(message.params.message);
+        req.apivar = message.params.apivar;
+        await controller.connect(req);
       case "discord-response":
         await discordService.sendDiscordResponse(
           message.params.message,

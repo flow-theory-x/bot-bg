@@ -162,9 +162,6 @@ const getDisplayData = async () => {
 };
 
 const sendDiscordResponse = async (message, mesToken) => {
-  if (CONST.API_ENV != "PRD") {
-    message = message + "\nver." + CONST.VERSION;
-  }
   const url = `https://discord.com/api/webhooks/${CONST.DISCORD_API_ID}/${mesToken}`;
   const body = {
     content: message,
@@ -174,9 +171,6 @@ const sendDiscordResponse = async (message, mesToken) => {
 };
 
 const sendDiscordMessage = async (message, channelId) => {
-  if (CONST.API_ENV != "PRD") {
-    message = message + "\nver." + CONST.VERSION;
-  }
   const url = "https://discord.com/api/v10/channels/" + channelId + "/messages";
   const body = {
     content: message,
