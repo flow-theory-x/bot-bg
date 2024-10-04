@@ -9,6 +9,15 @@ import memberModel from "../model/members.js";
 const connect = async (req) => {
   let sendMes = req.data.options[0].value + "を受け付けました\n";
   switch (req.data.options[0].value) {
+    case "roles":
+      if (req.content === "!roles") {
+        const member = req.member;
+        const roles = member.roles.cache;
+        const roleNames = roles.map((role) => role.name).join(", ");
+        sendMes = `あなたのロール: ${roleNames}`;
+      } else {
+        sendMes = `あなたには役割はない`;
+      }
     case "ver":
       sendMes = messages.getVer(req);
       break;
