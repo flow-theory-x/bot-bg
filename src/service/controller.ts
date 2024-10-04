@@ -19,6 +19,16 @@ const connect = async (req) => {
         "\nbg.ver : " +
         CONST.VERSION;
       break;
+    case "getDiscord":
+      sendMes = await discordList();
+      break;
+    case "getDynamo":
+      sendMes = await dynamoList();
+      break;
+    case "updateDb":
+      await dynamoUpdate();
+      sendMes = "Sync Discord to Dynamo";
+      break;
     case "info":
       sendMes += "\nchannelId: " + req.channel_id;
       sendMes += "\nguild_id: " + req.guild_id;
@@ -45,7 +55,6 @@ const connect = async (req) => {
 
 const discordList = async () => {
   const result = await discordService.getDisplayData();
-  console.log("Discord test:" + result);
   return result;
 };
 
