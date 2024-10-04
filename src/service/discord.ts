@@ -4,58 +4,69 @@ const guild_id = CONST.DISCORD_GUILD_ID;
 const bot_key = CONST.DISCORD_BOT_KEY;
 let json = [];
 let mode = "get";
-let roles = CONST.roles;
+let roles = [];
 
-async function loadCustomConstants() {
-  try {
-    const { CUSTOM_SETTINGS } = await import("../common/customSettings.js");
-    roles = CUSTOM_SETTINGS.roles;
-  } catch (error) {
-    roles = CONST.roles;
+async function loadAllRoles() {
+  console.dir("all role id 取得");
+  if (roles.length == 0) {
+    try {
+      roles = await discordService.getGuildRoles(guild_id);
+      if (roles.length == 0) {
+        roles.push({
+          id: "0000000000000000000",
+          name: "notiong",
+        });
+      }
+    } catch (error) {
+      console.log("getError" + error);
+    }
   }
 }
 
-const sendApi = async (endpoint, method, body) => {
-  console.log(method + " : " + endpoint + "  botkey : " + bot_key);
-  const response = await fetch(endpoint, {
-    headers: {
-      accept: "*/*",
-      "User-Agent": "bonsoleilDiscordBot (https://github.com/goodsun/bizbot)",
-      "accept-language": "ja,en-US;q=0.9,en;q=0.8",
-      authorization: `Bot ${bot_key}`,
-      "Content-Type": "application/json",
-      "sec-fetch-dest": "empty",
-      "sec-fetch-mode": "cors",
-      "sec-fetch-site": "same-origin",
-      "sec-gpc": "1",
-      "x-discord-locale": "ja",
-    },
-    referrerPolicy: "strict-origin-when-cross-origin",
-    body: JSON.stringify(body),
-    method: method,
-    mode: "cors",
-    credentials: "include",
-  })
-    .then((response) => {
-      if (response.ok) {
-        console.log("response.OK:メッセージが正常に送信されました");
-        return response.json();
-      } else {
-        console.log("response.NG:メッセージが正常に送信されませんでした");
-        return response.json().then((error) => {
-          throw new Error(`Error ${response.status}: ${error.message}`);
-        });
-      }
-    })
-    .catch((error) => {
-      console.error("メッセージの送信に失敗しました:", error.message);
-      throw new Error(`Error SEND ERROR : ${error.message}`);
-    });
-  return response;
+const sendApi = async (endpoint: string, method: string, body: any = null) => {
+  try {
+    console.log(`${method} : ${endpoint}  botkey : ${bot_key}`);
+
+    const fetchOptions: RequestInit = {
+      method,
+      headers: {
+        accept: "*/*",
+        "User-Agent": "bonsoleilDiscordBot (https://github.com/goodsun/bizbot)",
+        "accept-language": "ja,en-US;q=0.9,en;q=0.8",
+        authorization: `Bot ${bot_key}`,
+        "Content-Type": "application/json",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "sec-gpc": "1",
+        "x-discord-locale": "ja",
+      },
+      mode: "cors",
+      credentials: "include" as RequestCredentials, // 型に適合するように変更
+      referrerPolicy: "strict-origin-when-cross-origin",
+    };
+
+    if (method !== "GET" && body) {
+      fetchOptions.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(endpoint, fetchOptions);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error ${response.status}: ${errorData.message}`);
+    }
+
+    console.log("response.OK: メッセージが正常に送信されました");
+    return await response.json();
+  } catch (error) {
+    console.error("メッセージの送信に失敗しました:", error.message);
+    throw new Error(`SEND ERROR: ${error.message}`);
+  }
 };
 
 const getMemberList = async (nextid = null) => {
-  await loadCustomConstants();
+  await loadAllRoles();
   let endpoint = `https://discord.com/api/v10/guilds/${guild_id}/members?limit=1000`;
   if (nextid) {
     endpoint = `https://discord.com/api/v10/guilds/${guild_id}/members?limit=1000&after=${nextid}`;
@@ -112,6 +123,13 @@ const getMemberList = async (nextid = null) => {
     for (let i = 0; i < data.roles.length; i++) {
       member.roles.push(String(data.roles[i]));
     }
+
+    member.roles = data.roles
+      .map((roleId) => {
+        const role = roles.find((r) => r.id === roleId);
+        return role ? role.name : null;
+      })
+      .filter(Boolean);
 
     if (data.avatar) {
       member.icon = `https://cdn.discordapp.com/guilds/${CONST.DISCORD_GUILD_ID}/users/${data.user.id}/avatars/${data.avatar}.png`;
@@ -218,7 +236,7 @@ const sendDiscordDm = async (message, userId) => {
 
 const getGuildRoles = async (guildId) => {
   const url = "https://discord.com/api/v10/guilds/" + guildId + "/roles";
-  const result = await sendApi(url, "get", "");
+  const result = await sendApi(url, "get");
   return result;
 };
 
