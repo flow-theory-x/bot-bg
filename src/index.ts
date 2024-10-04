@@ -10,6 +10,7 @@ export const handler = async (event) => {
         const req = JSON.parse(message.params.message);
         req.apivar = message.params.apivar;
         await controller.connect(req);
+        break;
       case "discord-response":
         await discordService.sendDiscordResponse(
           message.params.message,

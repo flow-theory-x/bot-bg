@@ -133,3 +133,4 @@ dist
 *.zip
 *.env
 customSettings.ts
+deploy/custom_settings/*

@@ -22,51 +22,6 @@ const getMember = async (req) => {
   return await dynamoService.getItem(params);
 };
 
-const getDisplayMember = async (req) => {
-  const member = await getMember(req);
-  let result = "<div>";
-  if (member != undefined) {
-    result = result + "<img src='" + member.Icon.S + "' />";
-    result = result + "<br />id : " + req.params.id;
-    result = result + "<br /> name : " + member.Name.S;
-    result = result + "<br /> roles : " + member.Roles.SS;
-    result = result + "<br /> join : " + member.Join.S;
-    result = result + "<br /> exit : " + member.DeleteFlag.BOOL;
-    result = result + "<br /> update : " + member.Updated.S;
-  }
-  result = result + "</div>";
-  return result;
-};
-
-const getDisplayData = async () => {
-  const list = await getMemberList();
-  if (list == undefined) {
-    let params = CRUD.create;
-    params.TableName = TableName;
-    dynamoService.createTable(params);
-    return "TABLE CREATE : " + TableName;
-  } else {
-    let result = "<div>";
-    for (let key in list.Items) {
-      const data = list.Items[key];
-      result =
-        result +
-        key +
-        " | " +
-        'Id: <b><a href="/member/' +
-        data.DiscordId.N +
-        '">' +
-        data.DiscordId.N +
-        "</a></b>" +
-        " name: <b>" +
-        data.Name.S +
-        "</b><br />";
-    }
-    result = result + "</div>";
-    return result;
-  }
-};
-
 const memberCreate = async (member) => {
   console.log("dynamo メンバー登録");
   let params = CRUD.write;
@@ -105,10 +60,12 @@ const memberUpdate = async (member) => {
     ":roles": { SS: member.roles } as object,
     ":updated": { S: new Date(new Date().getTime()) } as object,
   };
+
   discordService.sendDiscordMessage(
-    "<@" + member.id + ">の情報が更新されました",
-    "1145185184543686776"
+    "<@" + member.id + ">の情報が更新されました\n information has been updated",
+    CONST.DISCORD_DEFAULT_CHANNEL_ID
   );
+
   await dynamoService.updateItem(params);
 };
 
@@ -196,7 +153,5 @@ const memberModel = {
   memberDelete,
   memberSoftDelete,
   memberListUpdate,
-  getDisplayData,
-  getDisplayMember,
 };
 export default memberModel;

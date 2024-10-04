@@ -38,9 +38,10 @@ const sendApi = async (endpoint, method, body) => {
   })
     .then((response) => {
       if (response.ok) {
-        console.log("メッセージが正常に送信されました");
+        console.log("response.OK:メッセージが正常に送信されました");
         return response.json();
       } else {
+        console.log("response.NG:メッセージが正常に送信されませんでした");
         return response.json().then((error) => {
           throw new Error(`Error ${response.status}: ${error.message}`);
         });
@@ -48,6 +49,7 @@ const sendApi = async (endpoint, method, body) => {
     })
     .catch((error) => {
       console.error("メッセージの送信に失敗しました:", error.message);
+      throw new Error(`Error SEND ERROR : ${error.message}`);
     });
   return response;
 };
@@ -161,13 +163,23 @@ const getDisplayData = async () => {
   return result;
 };
 
-const sendDiscordResponse = async (message, mesToken) => {
+const sendDiscordResponse = async (message, mesToken, resendCh?) => {
   const url = `https://discord.com/api/webhooks/${CONST.DISCORD_API_ID}/${mesToken}`;
   const body = {
     content: message,
   };
-  const result = await sendApi(url, "post", body);
-  return result;
+  try {
+    const result = await sendApi(url, "post", body);
+    return result;
+  } catch (err) {
+    console.error("返信に失敗しました。" + err);
+    message = "re send :\n" + message;
+    if (resendCh != undefined) {
+      sendDiscordMessage(message, resendCh);
+    } else {
+      sendDiscordMessage(message, CONST.DISCORD_DEFAULT_CHANNEL_ID);
+    }
+  }
 };
 
 const sendDiscordMessage = async (message, channelId) => {
