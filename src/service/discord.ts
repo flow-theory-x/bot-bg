@@ -216,6 +216,12 @@ const sendDiscordDm = async (message, userId) => {
   return result;
 };
 
+const getGuildRoles = async (guildId) => {
+  const url = "https://discord.com/api/v10/guilds/" + guildId + "/roles";
+  const result = await sendApi(url, "get", "");
+  return result;
+};
+
 const discordService = {
   sendApi,
   sendDiscordResponse,
@@ -224,6 +230,7 @@ const discordService = {
   getList,
   getMemberList,
   getDisplayData,
+  getGuildRoles,
 };
 
 export default discordService;
