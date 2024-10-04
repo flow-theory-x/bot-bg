@@ -41,6 +41,10 @@ const memberCreate = async (member) => {
 
 const memberUpdate = async (member) => {
   console.log("dynamo メンバー更新");
+  console.dir(member);
+  if (member.roles.length == 0) {
+    member.roles.push("");
+  }
   let params = CRUD.update;
   params.TableName = TableName;
   params.Key.DiscordId.N = String(member.id);

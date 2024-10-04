@@ -9,3 +9,10 @@ export const sleep = (waitTime) => {
 export const log = (title, message) => {
   console.log(title + ":" + message);
 };
+
+const urils = {
+  sleep,
+  log,
+};
+
+export default urils;

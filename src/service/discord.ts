@@ -62,6 +62,7 @@ const getMemberList = async (nextid = null) => {
   } else {
     json = [];
   }
+  console.log("getMember connect discord:" + endpoint);
   const response = await fetch(endpoint, {
     headers: {
       accept: "*/*",
@@ -79,7 +80,15 @@ const getMemberList = async (nextid = null) => {
     method: "GET",
     mode: "cors",
     credentials: "include",
-  });
+  })
+    .then((response) => {
+      console.log("GET RESPONSE DATA : " + JSON.stringify(response));
+      return response;
+    })
+    .catch((error) => {
+      console.error("メンバーリストの取得に失敗しました:", error.message);
+      throw new Error(`Error SEND ERROR : ${error.message}`);
+    });
 
   const result = await response.json();
   for (let i = 0; i < result.length; i++) {
@@ -95,15 +104,13 @@ const getMemberList = async (nextid = null) => {
     if (data.nick) {
       member.name = data.nick;
     } else {
-      member.name = data.user.username;
+      member.name = data.user.global_name;
     }
     member.username = data.user.username;
 
     member.roles = [];
     for (let i = 0; i < data.roles.length; i++) {
-      if (roles[data.roles[i]]) {
-        member.roles.push(roles[data.roles[i]]);
-      }
+      member.roles.push(String(data.roles[i]));
     }
 
     if (data.avatar) {
@@ -173,7 +180,7 @@ const sendDiscordResponse = async (message, mesToken, resendCh?) => {
     return result;
   } catch (err) {
     console.error("返信に失敗しました。" + err);
-    message = "re send :\n" + message;
+    message = "再送 :\n" + message;
     if (resendCh != undefined) {
       sendDiscordMessage(message, resendCh);
     } else {

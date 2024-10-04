@@ -79,11 +79,9 @@ const getAllItems = async (tableName) => {
     const params: any = {
       TableName: tableName,
     };
-
     if (lastEvaluatedKey) {
       params.ExclusiveStartKey = lastEvaluatedKey;
     }
-
     try {
       const response = await client.send(new ScanCommand(params));
       for (let i = 0; i < response.Items.length; i++) {
@@ -93,10 +91,9 @@ const getAllItems = async (tableName) => {
       lastEvaluatedKey = response.LastEvaluatedKey;
     } catch (error) {
       console.error("Unable to scan the table:", error);
-      return;
+      throw new Error(`Unable to scan the table : ${error}`);
     }
   } while (lastEvaluatedKey);
-
   return list;
 };
 
@@ -112,10 +109,8 @@ const getDisplayData = async (tableName) => {
       data.Name.S +
       " discordId:" +
       data.DiscordId.N +
-      " roles:" +
-      data.Roles.SS +
-      " join:" +
-      data.Join.S +
+      //" roles:" + data.Roles.SS +
+      //" join:" + data.Join.S +
       "\n";
   }
   return result;
