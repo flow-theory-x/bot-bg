@@ -16,20 +16,20 @@ const connect = async (req) => {
     case "ver":
       sendMes = messages.getVer(req);
       break;
-    case "getDiscord":
-      sendDiscordList(req.channel_id);
-      sendMes = "getDiscordを受け付けました。";
-      break;
-    case "getDynamo":
-      sendMes = await dynamoList(req.channel_id);
-      console.log("getDynamo:" + sendMes);
+    case "info":
+      sendMes = messages.getInfo(req);
       break;
     case "updateDb":
       dynamoUpdate(req.channel_id);
       sendMes = "Sync Discord to Dynamo";
       break;
-    case "info":
-      sendMes = messages.getInfo(req);
+    case "getDynamo":
+      sendMes = await dynamoList(req.channel_id);
+      console.log("getDynamo:" + sendMes);
+      break;
+    case "getDiscord":
+      sendDiscordList(req.channel_id);
+      sendMes = "getDiscordを受け付けました。";
       break;
     case "totalinfo":
       sendMes += "\ntotal info: " + JSON.stringify(req, null, 2);
@@ -68,8 +68,15 @@ const dynamoList = async (channelId) => {
 };
 
 const dynamoUpdate = async (channelId) => {
-  const discordList = await discordService.getMemberList();
   let dynamoList = [];
+  let discordList = [];
+  try {
+    discordList = await discordService.getMemberList();
+  } catch (e) {
+    console.error("Can't get discordMemberList" + e);
+    return;
+  }
+
   try {
     dynamoList = await memberModel.getAllList();
     await memberModel.memberListUpdate(discordList, dynamoList);

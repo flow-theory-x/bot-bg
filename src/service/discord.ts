@@ -1,31 +1,39 @@
 import { CONST } from "../common/const.js";
+import util from "../common/util.js";
 import { setTimeout } from "timers/promises";
-const guild_id = CONST.DISCORD_GUILD_ID;
-const bot_key = CONST.DISCORD_BOT_KEY;
 let json = [];
-let mode = "get";
 let roles = [];
+let exec_id = 0;
 
 async function loadAllRoles() {
-  console.dir("all role id 取得");
   if (roles.length == 0) {
-    try {
-      roles = await discordService.getGuildRoles(guild_id);
-      if (roles.length == 0) {
-        roles.push({
-          id: "0000000000000000000",
-          name: "notiong",
-        });
-      }
-    } catch (error) {
-      console.log("getError" + error);
+    console.log("all role id 取得");
+    roles = await getGuildRoles(CONST.DISCORD_GUILD_ID);
+    if (roles.length == 0) {
+      roles.push({
+        id: "0000000000000000000",
+        name: "notiong",
+      });
     }
+  } else {
+    console.log("role ids exist");
   }
 }
 
-const sendApi = async (endpoint: string, method: string, body: any = null) => {
+const sendApi = async (
+  endpoint: string,
+  method: string,
+  body: any = null,
+  retry = 0
+) => {
+  exec_id++;
+  const execId = exec_id;
   try {
-    console.log(`${method} : ${endpoint}  botkey : ${bot_key}`);
+    console.log(
+      `TRY SEND : ${execId} | ${method} : ${endpoint} body : ${JSON.stringify(
+        body
+      )}`
+    );
 
     const fetchOptions: RequestInit = {
       method,
@@ -33,7 +41,7 @@ const sendApi = async (endpoint: string, method: string, body: any = null) => {
         accept: "*/*",
         "User-Agent": "bonsoleilDiscordBot (https://github.com/goodsun/bizbot)",
         "accept-language": "ja,en-US;q=0.9,en;q=0.8",
-        authorization: `Bot ${bot_key}`,
+        authorization: `Bot ${CONST.DISCORD_BOT_KEY}`,
         "Content-Type": "application/json",
         "sec-fetch-dest": "empty",
         "sec-fetch-mode": "cors",
@@ -51,57 +59,54 @@ const sendApi = async (endpoint: string, method: string, body: any = null) => {
     }
 
     const response = await fetch(endpoint, fetchOptions);
+    const headers = await response.headers;
+    if (Number(headers.get("x-ratelimit-remaining")) <= 10) {
+      console.log(
+        `### ${execId}: x-ratelimit-reset-after ${headers.get(
+          "x-ratelimit-reset-after"
+        )}`
+      );
+    }
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(`Error ${response.status}: ${errorData.message}`);
+      throw new Error(
+        `Error ${execId} ${response.status}: ${errorData.message}`
+      );
     }
 
-    console.log("response.OK: メッセージが正常に送信されました");
+    console.log(`eid:${execId} response.OK: sendApi実行が成功しました。`);
     return await response.json();
   } catch (error) {
-    console.error("メッセージの送信に失敗しました:", error.message);
-    throw new Error(`SEND ERROR: ${error.message}`);
+    retry++;
+    console.error(
+      `eid:${execId} sendApi実行に失敗しました: ${error.message} retry:${retry}`
+    );
+    console.error(
+      `ERR SEND : ${execId} | ${method} : ${endpoint} body : ${JSON.stringify(
+        body
+      )} botkey : ${CONST.DISCORD_BOT_KEY}
+      `
+    );
+    if (retry < 5) {
+      util.sleep(5000 * retry);
+      return sendApi(endpoint, method, body, retry);
+    }
+    throw new Error(`eid:${execId} SEND ERROR: ${error.message}`);
   }
 };
 
 const getMemberList = async (nextid = null) => {
-  await loadAllRoles();
-  let endpoint = `https://discord.com/api/v10/guilds/${guild_id}/members?limit=1000`;
+  let endpoint = `https://discord.com/api/v10/guilds/${CONST.DISCORD_GUILD_ID}/members?limit=1000`;
   if (nextid) {
-    endpoint = `https://discord.com/api/v10/guilds/${guild_id}/members?limit=1000&after=${nextid}`;
+    endpoint = `https://discord.com/api/v10/guilds/${CONST.DISCORD_GUILD_ID}/members?limit=1000&after=${nextid}`;
   } else {
     json = [];
   }
-  console.log("getMember connect discord:" + endpoint);
-  const response = await fetch(endpoint, {
-    headers: {
-      accept: "*/*",
-      "User-Agent": "bonsoleilDiscordBot (https://github.com/goodsun/bizbot)",
-      "accept-language": "ja,en-US;q=0.9,en;q=0.8",
-      authorization: `Bot ${bot_key}`,
-      "sec-fetch-dest": "empty",
-      "sec-fetch-mode": "cors",
-      "sec-fetch-site": "same-origin",
-      "sec-gpc": "1",
-      "x-discord-locale": "ja",
-    },
-    referrerPolicy: "strict-origin-when-cross-origin",
-    body: null,
-    method: "GET",
-    mode: "cors",
-    credentials: "include",
-  })
-    .then((response) => {
-      console.log("GET RESPONSE DATA : " + JSON.stringify(response));
-      return response;
-    })
-    .catch((error) => {
-      console.error("メンバーリストの取得に失敗しました:", error.message);
-      throw new Error(`Error SEND ERROR : ${error.message}`);
-    });
 
-  const result = await response.json();
+  const result = await sendApi(endpoint, "get");
+  //const result = await response.json();
+
   for (let i = 0; i < result.length; i++) {
     const data = result[i];
     if (data.user.bot) {
@@ -141,16 +146,13 @@ const getMemberList = async (nextid = null) => {
     }
 
     member.join = data.joined_at;
+    console.log("push member : " + JSON.stringify(member));
     json.push(member);
+    console.log("json result" + JSON.stringify(json, null, 2));
   }
 
   if (result.length === 1000) {
-    const headers = await response.headers;
-    // x-ratelimit-remaining残りが3を切ったら1秒待つ
-    if (Number(headers.get("x-ratelimit-remaining")) <= 3) {
-      console.log("set timeout", headers.get("x-ratelimit-reset-after"));
-      await setTimeout(1000);
-    }
+    await setTimeout(1000);
     console.log(
       new Date().toLocaleTimeString("ja-JP") +
         " Get Discord Members:" +
@@ -159,16 +161,36 @@ const getMemberList = async (nextid = null) => {
     await getMemberList(result[1000 - 1].user.id);
   }
 
+  //完了処理
   return json;
 };
 
 const getList = async () => {
-  json = [];
-  return await getMemberList();
+  try {
+    await loadAllRoles();
+  } catch (error) {
+    console.error("メンバーロールの取得に失敗しました:", error.message);
+    throw new Error(`Error GetMemberRoll ERROR : ${error.message}`);
+  }
+  await util.sleep(3000);
+  try {
+    return await getMemberList();
+  } catch (error) {
+    return {
+      result: "err",
+      error: error,
+    };
+  }
 };
 
 const getDisplayData = async () => {
   const list = await getList();
+  if (list["result"] == "working") {
+    return "List is Updateing[" + list["exec"] + "]\n please wait...";
+  }
+  if (list["result"] == "err") {
+    return "connectError[" + list["error"] + "]\n please retry...";
+  }
   let result = "\n";
   for (let key in list) {
     const data = list[key];
@@ -193,7 +215,10 @@ const sendDiscordResponse = async (message, mesToken, resendCh?) => {
   if (mesToken == CONST.LOCAL_TEST_EVENT) {
     console.log("send to noticeChannel due to LocalTest");
     sendDiscordMessage(
-      "send to noticeChannel due to LocalTest \n" + message,
+      "▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽▽\n\n" +
+        "send to noticeChannel due to LocalTest \n" +
+        message +
+        "\n\n△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△△",
       CONST.DISCORD_DEVELOP_CHANNEL_ID
     );
     return;
@@ -222,8 +247,20 @@ const sendDiscordMessage = async (message, channelId) => {
   const body = {
     content: message,
   };
-  const result = await sendApi(url, "post", body);
-  return result;
+
+  try {
+    const result = await sendApi(url, "post", body);
+    return result;
+  } catch (error) {
+    console.error(
+      "failed to sendDiscordMessage:" +
+        error +
+        " url" +
+        url +
+        " message:" +
+        message
+    );
+  }
 };
 
 const sendDiscordDm = async (message, userId) => {
@@ -244,18 +281,31 @@ const sendDiscordDm = async (message, userId) => {
   return result;
 };
 
-const getGuildRoles = async (guildId) => {
+const getGuildRoles = async (guildId, retry = 0) => {
+  const eid = exec_id;
+  console.error(`### ロールを取得 eid:${eid} ###`);
   const url = "https://discord.com/api/v10/guilds/" + guildId + "/roles";
-  const result = await sendApi(url, "get");
-  return result;
+  try {
+    const result = await sendApi(url, "get");
+    console.error(
+      `### ロールを取得完了 ${JSON.stringify(result)} eid:${eid} ###`
+    );
+    return result;
+  } catch {
+    retry++;
+    console.error(`### ロールを取得失敗 eid:${eid} retry:${retry} ###`);
+    if (retry < 5) {
+      util.sleep(5000 * retry);
+      getGuildRoles(guildId, retry);
+    }
+    return roles;
+  }
 };
 
 const discordService = {
-  sendApi,
   sendDiscordResponse,
   sendDiscordMessage,
   sendDiscordDm,
-  getList,
   getMemberList,
   getDisplayData,
   getGuildRoles,

@@ -1,4 +1,5 @@
 export const sleep = (waitTime) => {
+  console.log("wait to " + waitTime);
   if (waitTime < 1) {
     return;
   }
