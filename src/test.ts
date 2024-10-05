@@ -1,7 +1,7 @@
 import { CONST } from "./common/const.js";
-import controller from "./service/controller.js";
+import systemController from "./controller/systemController.js";
 import util from "./common/util.js";
-import discordService from "./service/discord.js";
+import discordService from "./service/discordService.js";
 import { testMessage } from "./test/testEvent.js";
 
 const mode = [
@@ -13,7 +13,7 @@ const mode = [
   "getDynamo",
   "createTables",
 ];
-const target = ["roleUpdate"];
+const target = ["roleUpdate", "memberUpdate"];
 //const target = [];
 const waitSec = 3000;
 const longwaitSec = 10000;
@@ -40,7 +40,7 @@ for (let key in mode) {
     testMessage.data.options[0].value +
     "を受け付けました\n";
   console.log(testInfo);
-  await controller.connect(testMessage);
+  await systemController.connect(testMessage);
   await util.sleep(longwaitSec);
 }
 

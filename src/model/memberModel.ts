@@ -1,7 +1,7 @@
 import { CRUD } from "../crud/crud.js";
 import { CONST } from "../common/const.js";
-import dynamoService from "../service/dynamo.js";
-import discordService from "../service/discord.js";
+import dynamoService from "../service/dynamoService.js";
+import discordService from "../service/discordService.js";
 const crud = CRUD.member;
 
 const getMemberList = async () => {
@@ -29,9 +29,9 @@ const memberCreate = async (member) => {
   params.Item.Icon.S = member.icon;
   params.Item.Join.S = member.join;
   if (member.roles.length == 0) {
-    params.Item.Roles.SS = [""];
+    params.Item.Roles.NS = [""];
   } else {
-    params.Item.Roles.SS = member.roles;
+    params.Item.Roles.NS = member.roles;
   }
   await dynamoService.putItem(params);
 };

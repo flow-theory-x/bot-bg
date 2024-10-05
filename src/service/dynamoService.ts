@@ -109,7 +109,7 @@ const getDisplayData = async (tableName) => {
       data.Name.S +
       " discordId:" +
       data.DiscordId.N +
-      //" roles:" + data.Roles.SS +
+      //" roles:" + data.Roles.NS +
       //" join:" + data.Join.S +
       "\n";
   }

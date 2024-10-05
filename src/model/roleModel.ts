@@ -1,7 +1,7 @@
 import { CRUD } from "../crud/crud.js";
 import { CONST } from "../common/const.js";
-import dynamoService from "../service/dynamo.js";
-//import discordService from "../service/discord.js";
+import dynamoService from "../service/dynamoService.js";
+//import discordService from "../service/discordService.js";
 
 const crud = CRUD.role;
 

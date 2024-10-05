@@ -2,8 +2,8 @@ import { CONST } from "../common/const.js";
 import { CRUD } from "../crud/crud.js";
 import util from "../common/util.js";
 import messages from "../common/messages.js";
-import discordService from "../service/discord.js";
-import dynamoService from "../service/dynamo.js";
+import discordService from "../service/discordService.js";
+import dynamoService from "../service/dynamoService.js";
 import memberModel from "../model/memberModel.js";
 import roleModel from "../model/roleModel.js";
 
@@ -40,8 +40,20 @@ const connect = async (req) => {
       await dynamoCreateTable("member");
       sendMes = "CreateTablesを受け付けました。";
       break;
+    case "help":
     default:
-      sendMes = messages.getVer(req);
+      sendMes =
+        "/system [option]\n" +
+        "ver\n" +
+        "info\n" +
+        "roleUpdate\n" +
+        "memberUpdate\n" +
+        "getDynamo\n" +
+        "getDiscord\n" +
+        "totalInfo\n" +
+        "createTable\n" +
+        "ver\n" +
+        "help";
   }
   await discordService.sendDiscordResponse(sendMes, req.token, req.channel_id);
 };
@@ -126,10 +138,10 @@ const dynamoCreateTable = async (tableName) => {
   dynamoService.createTable(params);
 };
 
-const controller = {
+const systemController = {
   connect,
   discordList,
   dynamoList,
 };
 
-export default controller;
+export default systemController;

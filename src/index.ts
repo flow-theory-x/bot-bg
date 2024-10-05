@@ -1,6 +1,8 @@
 import { CONST } from "./common/const.js";
-import discordService from "./service/discord.js";
-import controller from "./service/controller.js";
+import discordService from "./service/discordService.js";
+import systemController from "./controller/systemController.js";
+import creatorController from "./controller/creatorController.js";
+import memberController from "./controller/memberController.js";
 
 export const handler = async (event) => {
   for (let key in event.Records) {
@@ -9,7 +11,14 @@ export const handler = async (event) => {
       case "system-connect":
         const req = JSON.parse(message.params.message);
         req.apivar = message.params.apivar;
-        await controller.connect(req);
+        switch (req.data.name) {
+          case "system":
+            await systemController.connect(req);
+          case "creator":
+            await creatorController.connect(req);
+          case "member":
+            await memberController.connect(req);
+        }
         break;
       case "discord-response":
         await discordService.sendDiscordResponse(

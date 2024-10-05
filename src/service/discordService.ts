@@ -129,12 +129,14 @@ const getMemberList = async (nextid = null) => {
       member.roles.push(String(data.roles[i]));
     }
 
+    /*
     member.roles = data.roles
       .map((roleId) => {
         const role = roles.find((r) => r.id === roleId);
         return role ? role.name : null;
       })
       .filter(Boolean);
+    */
 
     if (data.avatar) {
       member.icon = `https://cdn.discordapp.com/guilds/${CONST.DISCORD_GUILD_ID}/users/${data.user.id}/avatars/${data.avatar}.png`;
