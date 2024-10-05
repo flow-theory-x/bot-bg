@@ -4,8 +4,15 @@ import util from "./common/util.js";
 import discordService from "./service/discord.js";
 import { testMessage } from "./test/testEvent.js";
 
-const mode = ["ver", "info", "getDiscord", "updateDb", "getDynamo"];
-const target = ["updateDb"];
+const mode = [
+  "createTables",
+  "ver",
+  "info",
+  "getDiscord",
+  "updateDb",
+  "getDynamo",
+];
+const target = ["createTables"];
 //const target = [];
 const waitSec = 3000;
 const longwaitSec = 10000;

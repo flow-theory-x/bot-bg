@@ -4,7 +4,8 @@ import util from "../common/util.js";
 import messages from "../common/messages.js";
 import discordService from "../service/discord.js";
 import dynamoService from "../service/dynamo.js";
-import memberModel from "../model/members.js";
+import memberModel from "../model/memberModel.js";
+import roleModel from "../model/roleModel.js";
 
 const connect = async (req) => {
   let sendMes = req.data.options[0].value + "を受け付けました\n";
@@ -33,6 +34,9 @@ const connect = async (req) => {
       break;
     case "totalinfo":
       sendMes += "\ntotal info: " + JSON.stringify(req, null, 2);
+    case "createTables":
+      await dynamoCreateTable("member");
+      await dynamoCreateTable("role");
     default:
       sendMes = messages.getVer(req);
   }

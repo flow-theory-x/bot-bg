@@ -2,30 +2,27 @@ import { CRUD } from "../crud/crud.js";
 import { CONST } from "../common/const.js";
 import dynamoService from "../service/dynamo.js";
 import discordService from "../service/discord.js";
-const TableName = CONST.DYNAMO_TABLE_PREFIX + "_member";
+const crud = CRUD.member;
 
 const getMemberList = async () => {
-  let params = CRUD.member.query;
-  params.TableName = TableName;
+  let params = crud.query;
   const result = await dynamoService.query(params);
   return result;
 };
 
 const getAllList = async () => {
-  return await dynamoService.getAllItems(TableName);
+  return await dynamoService.getAllItems(crud.tableName);
 };
 
 const getMember = async (req) => {
-  let params = CRUD.member.read;
-  params.TableName = TableName;
+  let params = crud.read;
   params.Key.DiscordId.N = req.params.id;
   return await dynamoService.getItem(params);
 };
 
 const memberCreate = async (member) => {
   console.log("dynamo メンバー登録");
-  let params = CRUD.member.write;
-  params.TableName = TableName;
+  let params = crud.write;
   params.Item.DiscordId.N = String(member.id);
   params.Item.Name.S = member.name;
   params.Item.Username.S = member.username;
@@ -45,8 +42,7 @@ const memberUpdate = async (member) => {
   if (member.roles.length == 0) {
     member.roles.push("");
   }
-  let params = CRUD.member.update;
-  params.TableName = TableName;
+  let params = crud.update;
   params.Key.DiscordId.N = String(member.id);
   params.UpdateExpression =
     "SET #Name = :Name, #Username = :Username, #Icon = :Icon, #Roles= :roles, #Updated = :updated";
@@ -77,8 +73,7 @@ const memberDelete = async (member) => {
   console.log(
     "dynamo メンバー削除 " + member.DiscordId.N + " name:" + member.Name.S
   );
-  let params = CRUD.member.delete;
-  params.TableName = TableName;
+  let params = crud.delete;
   params.Key.DiscordId.N = member.DiscordId.N;
   await dynamoService.deleteItem(params);
 };
@@ -87,8 +82,7 @@ const memberSoftDelete = async (member) => {
   console.log(
     "dynamo メンバー退会 " + member.DiscordId.N + " name:" + member.Name.S
   );
-  let params = CRUD.member.update;
-  params.TableName = TableName;
+  let params = crud.update;
   params.Key.DiscordId.N = member.DiscordId.N;
   params.UpdateExpression = "SET DeleteFlag = :newVal";
   params.ExpressionAttributeValues = {
