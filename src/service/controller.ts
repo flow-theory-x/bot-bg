@@ -1,5 +1,5 @@
 import { CONST } from "../common/const.js";
-import { CRUD } from "../types/crud.js";
+import { CRUD } from "../crud/crud.js";
 import util from "../common/util.js";
 import messages from "../common/messages.js";
 import discordService from "../service/discord.js";
@@ -57,13 +57,11 @@ const discordList = async () => {
 const dynamoList = async (channelId) => {
   console.log("DYNAMO SETTING : " + CONST.DYNAMO_TABLE_PREFIX);
   try {
-    const result = await dynamoService.getDisplayData(
-      CONST.DYNAMO_TABLE_PREFIX + "_member"
-    );
+    const result = await dynamoService.getDisplayData(CRUD.member.tableName);
     return result;
   } catch (e) {
-    await dynamoCreateTable();
-    return "CREATE TABLE : " + CONST.DYNAMO_TABLE_PREFIX + "_member";
+    await dynamoCreateTable("member");
+    return "CREATE TABLE : " + CRUD.member.tableName;
   }
 };
 
@@ -82,14 +80,13 @@ const dynamoUpdate = async (channelId) => {
     await memberModel.memberListUpdate(discordList, dynamoList);
     await discordService.sendDiscordMessage("update Member Table\n", channelId);
   } catch (e) {
-    await dynamoCreateTable();
+    await dynamoCreateTable("member");
     await discordService.sendDiscordMessage("Create Member Table\n", channelId);
   }
 };
 
-const dynamoCreateTable = async () => {
-  let params = CRUD.create;
-  params.TableName = CONST.DYNAMO_TABLE_PREFIX + "_member";
+const dynamoCreateTable = async (tableName) => {
+  let params = CRUD[tableName].create;
   dynamoService.createTable(params);
 };
 

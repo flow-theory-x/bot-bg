@@ -1,16 +1,17 @@
 import { CONST } from "../common/const.js";
-const TableName = CONST.DYNAMO_TABLE_PREFIX + "_member";
+const TableName = CONST.DYNAMO_TABLE_PREFIX + "_role";
 
-export const CRUD = {
+export const ROLE = {
+  tableName: TableName,
   create: {
     TableName: TableName,
     AttributeDefinitions: [
       { AttributeName: "PartitionName", AttributeType: "S" },
-      { AttributeName: "DiscordId", AttributeType: "N" },
+      { AttributeName: "Id", AttributeType: "N" },
     ],
     KeySchema: [
       { AttributeName: "PartitionName", KeyType: "HASH" },
-      { AttributeName: "DiscordId", KeyType: "RANGE" },
+      { AttributeName: "Id", KeyType: "RANGE" },
     ],
     ProvisionedThroughput: {
       ReadCapacityUnits: 5,
@@ -20,13 +21,9 @@ export const CRUD = {
   write: {
     TableName: TableName,
     Item: {
-      PartitionName: { S: "Users" },
-      DiscordId: { N: "0" },
-      Name: { S: "Discord Name" },
-      Username: { S: "Discord Name" },
-      Icon: { S: "https://example.com/test.png" },
-      Roles: { SS: ["none"] },
-      Join: { S: new Date() },
+      PartitionName: { S: "Roles" },
+      Id: { N: "0" },
+      Name: { S: "Role Name" },
       DeleteFlag: { BOOL: "false" },
       Updated: { S: new Date() },
     },
@@ -34,25 +31,25 @@ export const CRUD = {
   read: {
     TableName: TableName,
     Key: {
-      PartitionName: { S: "Users" },
-      DiscordId: { N: "0" },
+      PartitionName: { S: "Roles" },
+      Id: { N: "0" },
     },
   },
   update: {
     TableName: TableName,
     Key: {
-      PartitionName: { S: "Users" },
-      DiscordId: { N: "0" },
+      PartitionName: { S: "Roles" },
+      Id: { N: "0" },
     },
-    UpdateExpression: "SET Icon = :newVal",
+    UpdateExpression: "SET Name = :newVal",
     ExpressionAttributeNames: {},
     ExpressionAttributeValues: {},
   },
   delete: {
     TableName: TableName,
     Key: {
-      PartitionName: { S: "Users" },
-      DiscordId: { N: "0" },
+      PartitionName: { S: "Roles" },
+      Id: { N: "0" },
     },
   },
   query: {
@@ -64,7 +61,7 @@ export const CRUD = {
       "#DeleteFlag": "DeleteFlag",
     } as object,
     ExpressionAttributeValues: {
-      ":PartitionName": { S: "Users" },
+      ":PartitionName": { S: "Roles" },
       ":DeleteFlag": { BOOL: false },
     } as object,
   },

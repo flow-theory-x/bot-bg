@@ -1,11 +1,11 @@
-import { CRUD } from "../types/crud.js";
+import { CRUD } from "../crud/crud.js";
 import { CONST } from "../common/const.js";
 import dynamoService from "../service/dynamo.js";
 import discordService from "../service/discord.js";
 const TableName = CONST.DYNAMO_TABLE_PREFIX + "_member";
 
 const getMemberList = async () => {
-  let params = CRUD.query;
+  let params = CRUD.member.query;
   params.TableName = TableName;
   const result = await dynamoService.query(params);
   return result;
@@ -16,7 +16,7 @@ const getAllList = async () => {
 };
 
 const getMember = async (req) => {
-  let params = CRUD.read;
+  let params = CRUD.member.read;
   params.TableName = TableName;
   params.Key.DiscordId.N = req.params.id;
   return await dynamoService.getItem(params);
@@ -24,7 +24,7 @@ const getMember = async (req) => {
 
 const memberCreate = async (member) => {
   console.log("dynamo メンバー登録");
-  let params = CRUD.write;
+  let params = CRUD.member.write;
   params.TableName = TableName;
   params.Item.DiscordId.N = String(member.id);
   params.Item.Name.S = member.name;
@@ -45,7 +45,7 @@ const memberUpdate = async (member) => {
   if (member.roles.length == 0) {
     member.roles.push("");
   }
-  let params = CRUD.update;
+  let params = CRUD.member.update;
   params.TableName = TableName;
   params.Key.DiscordId.N = String(member.id);
   params.UpdateExpression =
@@ -77,7 +77,7 @@ const memberDelete = async (member) => {
   console.log(
     "dynamo メンバー削除 " + member.DiscordId.N + " name:" + member.Name.S
   );
-  let params = CRUD.delete;
+  let params = CRUD.member.delete;
   params.TableName = TableName;
   params.Key.DiscordId.N = member.DiscordId.N;
   await dynamoService.deleteItem(params);
@@ -87,7 +87,7 @@ const memberSoftDelete = async (member) => {
   console.log(
     "dynamo メンバー退会 " + member.DiscordId.N + " name:" + member.Name.S
   );
-  let params = CRUD.update;
+  let params = CRUD.member.update;
   params.TableName = TableName;
   params.Key.DiscordId.N = member.DiscordId.N;
   params.UpdateExpression = "SET DeleteFlag = :newVal";
