@@ -189,6 +189,16 @@ const getDisplayData = async () => {
 };
 
 const sendDiscordResponse = async (message, mesToken, resendCh?) => {
+  console.log("mesToken : " + mesToken);
+  if (mesToken == CONST.LOCAL_TEST_EVENT) {
+    console.log("send to noticeChannel due to LocalTest");
+    sendDiscordMessage(
+      "send to noticeChannel due to LocalTest \n" + message,
+      CONST.DISCORD_DEVELOP_CHANNEL_ID
+    );
+    return;
+  }
+
   const url = `https://discord.com/api/webhooks/${CONST.DISCORD_API_ID}/${mesToken}`;
   const body = {
     content: message,
@@ -197,8 +207,8 @@ const sendDiscordResponse = async (message, mesToken, resendCh?) => {
     const result = await sendApi(url, "post", body);
     return result;
   } catch (err) {
-    console.error("返信に失敗しました。" + err);
-    message = "再送 :\n" + message;
+    console.error("Resent due to API delay over 3 seconds:" + err);
+    message = "Resent due to API delay over 3 sec.\n" + message;
     if (resendCh != undefined) {
       sendDiscordMessage(message, resendCh);
     } else {

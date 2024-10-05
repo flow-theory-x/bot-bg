@@ -8,9 +8,11 @@ mkdir ../dist
 
 pwd
 if [ $1 = 'stg' ]; then
+	LAMBDA_FUNCTION_NAME=flow-bg-stg
 	echo 'Zip for STG'
 	exit
 elif [ $1 = 'prd' ]; then
+	LAMBDA_FUNCTION_NAME=flow-bg-prd
 	echo 'Zip for PRD'
 	exit
 elif [ $1 = 'flow' ]; then
@@ -20,9 +22,12 @@ elif [ $1 = 'flow' ]; then
 	rm ${dir}/../${filename}
 	echo 'Zip for FLOW'
 elif [ $1 = 'local' ]; then
+	LAMBDA_FUNCTION_NAME=local-bg-test
+	cp custom_settings/bg_local.env ../dist/.env
+elif [ $1 = 'test' ]; then
+	LAMBDA_FUNCTION_NAME=local-bg-test
 	cp custom_settings/bg_local.env ../dist/.env
 else
-	echo 'input error'
 	exit
 fi
 
@@ -45,9 +50,16 @@ cd ../dist
 if [ $1 = 'local' ]; then
 	echo "start express run";
 	NODE_ENV=develop node index.js
+elif [ $1 = 'test' ]; then
+	echo "start test run";
+	NODE_ENV=develop node test.js
 else
 	zip -rq ${dir}/../${filename} ./*
 	zip ${dir}/../${filename} .env
-        cd ${dir}/../
-        aws lambda update-function-code --function-name ${LAMBDA_FUNCTION_NAME} --zip-file fileb://${filename}
+
+	zip --delete ${dir}/../${filename} test.js
+	zip --delete ${dir}/../${filename} test/*
+
+	cd ${dir}/../
+	aws lambda update-function-code --function-name ${LAMBDA_FUNCTION_NAME} --zip-file fileb://${filename}
 fi
