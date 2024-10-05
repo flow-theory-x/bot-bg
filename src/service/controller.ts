@@ -10,19 +10,19 @@ import roleModel from "../model/roleModel.js";
 const connect = async (req) => {
   let sendMes = req.data.options[0].value + "を受け付けました\n";
   switch (req.data.options[0].value) {
-    case "roles":
-      const result = await discordService.getGuildRoles(req.guild_id);
-      sendMes += "\nroles: " + JSON.stringify(result, null, 2);
-      break;
     case "ver":
       sendMes = messages.getVer(req);
       break;
     case "info":
       sendMes = messages.getInfo(req);
       break;
-    case "updateDb":
-      dynamoUpdate(req.channel_id);
-      sendMes = "Sync Discord to Dynamo";
+    case "roleUpdate":
+      dynamoRoleUpdate(req.channel_id);
+      sendMes = "Sync Role Discord to Dynamo";
+      break;
+    case "memberUpdate":
+      dynamoMemberUpdate(req.channel_id);
+      sendMes = "Sync Member Discord to Dynamo";
       break;
     case "getDynamo":
       sendMes = await dynamoList(req.channel_id);
@@ -34,13 +34,21 @@ const connect = async (req) => {
       break;
     case "totalinfo":
       sendMes += "\ntotal info: " + JSON.stringify(req, null, 2);
+      break;
     case "createTables":
-      await dynamoCreateTable("member");
       await dynamoCreateTable("role");
+      await dynamoCreateTable("member");
+      sendMes = "CreateTablesを受け付けました。";
+      break;
     default:
       sendMes = messages.getVer(req);
   }
   await discordService.sendDiscordResponse(sendMes, req.token, req.channel_id);
+};
+
+const discordList = async () => {
+  const result = await discordService.getDisplayData();
+  return result;
 };
 
 const sendDiscordList = async (channelId) => {
@@ -52,30 +60,52 @@ const sendDiscordList = async (channelId) => {
   return result;
 };
 
-const discordList = async () => {
-  const result = await discordService.getDisplayData();
-  console.log("discord list : " + result);
-  return result;
-};
-
 const dynamoList = async (channelId) => {
-  console.log("DYNAMO SETTING : " + CONST.DYNAMO_TABLE_PREFIX);
   try {
     const result = await dynamoService.getDisplayData(CRUD.member.tableName);
     return result;
   } catch (e) {
-    await dynamoCreateTable("member");
-    return "CREATE TABLE : " + CRUD.member.tableName;
+    await discordService.sendDiscordMessage(
+      "Member table not exist\n",
+      channelId
+    );
   }
 };
 
-const dynamoUpdate = async (channelId) => {
+const dynamoRoleUpdate = async (channelId) => {
+  let dynamoList = [];
+  let discordList = [];
+  try {
+    discordList = await discordService.getGuildRoles(CONST.DISCORD_GUILD_ID);
+  } catch (e) {
+    await discordService.sendDiscordMessage(
+      "couldn't get discord role list. prease retry",
+      channelId
+    );
+    return;
+  }
+  try {
+    dynamoList = await roleModel.getAllList();
+    await roleModel.listUpdate(discordList, dynamoList);
+    await discordService.sendDiscordMessage("update Member Table\n", channelId);
+  } catch (e) {
+    await discordService.sendDiscordMessage(
+      "Member Table not exist\n",
+      channelId
+    );
+  }
+};
+
+const dynamoMemberUpdate = async (channelId) => {
   let dynamoList = [];
   let discordList = [];
   try {
     discordList = await discordService.getMemberList();
   } catch (e) {
-    console.error("Can't get discordMemberList" + e);
+    await discordService.sendDiscordMessage(
+      "couldn't get discord member list. prease retry",
+      channelId
+    );
     return;
   }
 
@@ -84,8 +114,10 @@ const dynamoUpdate = async (channelId) => {
     await memberModel.memberListUpdate(discordList, dynamoList);
     await discordService.sendDiscordMessage("update Member Table\n", channelId);
   } catch (e) {
-    await dynamoCreateTable("member");
-    await discordService.sendDiscordMessage("Create Member Table\n", channelId);
+    await discordService.sendDiscordMessage(
+      "Member Table not exist\n",
+      channelId
+    );
   }
 };
 
@@ -98,7 +130,6 @@ const controller = {
   connect,
   discordList,
   dynamoList,
-  dynamoUpdate,
 };
 
 export default controller;

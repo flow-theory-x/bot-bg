@@ -5,14 +5,15 @@ import discordService from "./service/discord.js";
 import { testMessage } from "./test/testEvent.js";
 
 const mode = [
-  "createTables",
   "ver",
   "info",
+  "roleUpdate",
+  "memberUpdate",
   "getDiscord",
-  "updateDb",
   "getDynamo",
+  "createTables",
 ];
-const target = ["createTables"];
+const target = ["roleUpdate"];
 //const target = [];
 const waitSec = 3000;
 const longwaitSec = 10000;
