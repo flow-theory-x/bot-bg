@@ -3,8 +3,34 @@ import discordService from "./service/discordService.js";
 import systemController from "./controller/systemController.js";
 import creatorController from "./controller/creatorController.js";
 import memberController from "./controller/memberController.js";
+import getController from "./controller/getController.js";
+import postController from "./controller/postController.js";
 
 export const handler = async (event) => {
+  if (event.pathParameters) {
+    let result: string;
+    switch (event.httpMethod) {
+      case "GET":
+        result = await getController.connect(event);
+        return {
+          statusCode: 200,
+          body: result,
+        };
+      case "POST":
+        result = await postController.connect(event);
+        return {
+          statusCode: 200,
+          body: result,
+        };
+      default:
+        return {
+          statusCode: 405,
+          body: "Method Not Allowed",
+        };
+    }
+  }
+
+  // SQSの場合
   for (let key in event.Records) {
     const message = JSON.parse(event.Records[key].body);
     switch (message.function) {
