@@ -50,7 +50,7 @@ export const handler = async (event) => {
 
   const response = {
     statusCode: 200,
-    body: JSON.stringify("It Works."),
+    body: `${CONST.SERVER_INFO} ver.${CONST.VERSION}`,
   };
   return response;
 };

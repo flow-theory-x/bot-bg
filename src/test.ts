@@ -6,7 +6,7 @@ import util from "./common/util.js";
 import discordService from "./service/discordService.js";
 import { testMessage } from "./test/testEvent.js";
 
-const mainCommand = "member";
+const mainCommand = "system";
 const mode = [
   "ver",
   "info",
@@ -16,7 +16,7 @@ const mode = [
   "getDynamo",
   "createTables",
 ];
-const target = ["info"];
+const target = ["createTables"];
 //const target = [];
 const waitSec = 3000;
 const longwaitSec = 10000;

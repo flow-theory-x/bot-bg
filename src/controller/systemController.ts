@@ -38,6 +38,9 @@ const connect = async (req) => {
     case "createTables":
       await dynamoCreateTable("role");
       await dynamoCreateTable("member");
+      await dynamoCreateTable("item");
+      await dynamoCreateTable("shop");
+      await dynamoCreateTable("content");
       sendMes = "CreateTablesを受け付けました。";
       break;
     case "help":

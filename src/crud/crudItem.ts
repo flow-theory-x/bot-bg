@@ -1,8 +1,8 @@
 import { CONST } from "../common/const.js";
-const TableName = CONST.DYNAMO_TABLE_PREFIX + "_role";
-const PartitionName = "Roles";
+const TableName = CONST.DYNAMO_TABLE_PREFIX + "_item";
+const PartitionName = "Items";
 
-export const ROLE = {
+export const ITEM = {
   tableName: TableName,
   create: {
     TableName: TableName,
