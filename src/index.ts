@@ -5,12 +5,14 @@ import systemController from "./controller/systemController.js";
 import creatorController from "./controller/creatorController.js";
 import memberController from "./controller/memberController.js";
 import discordService from "./service/discordService.js";
+import expressRouter from "./router/expressRouter.js"; // ルートのインポート
 
 if (CONST.API_ENV == undefined) {
   process.exit(1);
 }
 
 const app = express();
+app.use("/", expressRouter);
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");

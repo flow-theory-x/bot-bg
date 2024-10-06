@@ -4,6 +4,7 @@ const PartitionName = "Contents";
 
 export const CONTENT = {
   tableName: TableName,
+  partitionName: PartitionName,
   create: {
     TableName: TableName,
     AttributeDefinitions: [

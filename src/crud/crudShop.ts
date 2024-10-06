@@ -4,6 +4,7 @@ const PartitionName = "Shops";
 
 export const SHOP = {
   tableName: TableName,
+  partitionName: PartitionName,
   create: {
     TableName: TableName,
     AttributeDefinitions: [
@@ -24,8 +25,18 @@ export const SHOP = {
     Item: {
       PartitionName: { S: PartitionName },
       Id: { N: "0" },
-      Name: { S: "Name" },
+      Eoa: { S: "" },
+      Name: { S: "" },
+      Imgurl: { S: "" },
+      Type: { S: "" },
+      Seed: { S: "" },
+      ChannelId: { S: "" },
+      Status: { N: "0" },
+      Json: {
+        S: '{"en":{"name":""},"ja":{"name":""}}',
+      },
       DeleteFlag: { BOOL: "false" },
+      Created: { S: new Date() },
       Updated: { S: new Date() },
     },
   },

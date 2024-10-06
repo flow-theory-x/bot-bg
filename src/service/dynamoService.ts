@@ -8,6 +8,7 @@ import {
   QueryCommand,
   ScanCommand,
 } from "@aws-sdk/client-dynamodb";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { CONST } from "../common/const.js";
 
 const client = new DynamoDBClient({ region: CONST.DYNAMO_REGION });
@@ -116,6 +117,32 @@ const getDisplayData = async (tableName) => {
   return result;
 };
 
+const getMaxId = async (tableName, idName) => {
+  const params: any = {
+    TableName: tableName,
+    ProjectionExpression: idName, // IDフィールドのみ取得
+  };
+
+  let maxId = null;
+  let items = [];
+  let lastEvaluatedKey = null;
+
+  do {
+    const response = await client.send(new ScanCommand(params));
+    items = items.concat(
+      response.Items.map((item) => unmarshall(item)[idName])
+    );
+    lastEvaluatedKey = response.LastEvaluatedKey;
+    params.ExclusiveStartKey = lastEvaluatedKey;
+  } while (lastEvaluatedKey);
+
+  if (items.length > 0) {
+    maxId = Math.max(...items);
+  }
+
+  return maxId;
+};
+
 const dynamoService = {
   createTable,
   putItem,
@@ -126,6 +153,7 @@ const dynamoService = {
   query,
   getAllItems,
   getDisplayData,
+  getMaxId,
 };
 
 export default dynamoService;

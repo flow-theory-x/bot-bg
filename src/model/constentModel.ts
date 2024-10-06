@@ -4,9 +4,9 @@ import dynamoService from "../service/dynamoService.js";
 
 const crud = CRUD.content;
 
-const getItem = async (req) => {
+const getItem = async (id) => {
   let params = crud.read;
-  params.Key.Id.N = req.params.id;
+  params.Key.Id.N = id;
   return await dynamoService.getItem(params);
 };
 

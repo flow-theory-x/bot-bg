@@ -4,6 +4,7 @@ const PartitionName = "Roles";
 
 export const ROLE = {
   tableName: TableName,
+  partitionName: PartitionName,
   create: {
     TableName: TableName,
     AttributeDefinitions: [

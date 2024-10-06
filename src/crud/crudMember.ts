@@ -1,8 +1,10 @@
 import { CONST } from "../common/const.js";
 const TableName = CONST.DYNAMO_TABLE_PREFIX + "_member";
+const PartitionName = "Users";
 
 export const MEMBER = {
   tableName: TableName,
+  partitionName: PartitionName,
   create: {
     TableName: TableName,
     AttributeDefinitions: [
@@ -21,7 +23,7 @@ export const MEMBER = {
   write: {
     TableName: TableName,
     Item: {
-      PartitionName: { S: "Users" },
+      PartitionName: { S: PartitionName },
       DiscordId: { N: "0" },
       Eoa: { S: "" },
       Name: { S: "" },
@@ -37,14 +39,14 @@ export const MEMBER = {
   read: {
     TableName: TableName,
     Key: {
-      PartitionName: { S: "Users" },
+      PartitionName: { S: PartitionName },
       DiscordId: { N: "0" },
     },
   },
   update: {
     TableName: TableName,
     Key: {
-      PartitionName: { S: "Users" },
+      PartitionName: { S: PartitionName },
       DiscordId: { N: "0" },
     },
     UpdateExpression: "SET Icon = :newVal",
@@ -54,7 +56,7 @@ export const MEMBER = {
   delete: {
     TableName: TableName,
     Key: {
-      PartitionName: { S: "Users" },
+      PartitionName: { S: PartitionName },
       DiscordId: { N: "0" },
     },
   },
@@ -67,7 +69,7 @@ export const MEMBER = {
       "#DeleteFlag": "DeleteFlag",
     } as object,
     ExpressionAttributeValues: {
-      ":PartitionName": { S: "Users" },
+      ":PartitionName": { S: PartitionName },
       ":DeleteFlag": { BOOL: false },
     } as object,
   },

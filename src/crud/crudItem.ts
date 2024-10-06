@@ -4,6 +4,7 @@ const PartitionName = "Items";
 
 export const ITEM = {
   tableName: TableName,
+  partitionName: PartitionName,
   create: {
     TableName: TableName,
     AttributeDefinitions: [
@@ -24,8 +25,16 @@ export const ITEM = {
     Item: {
       PartitionName: { S: PartitionName },
       Id: { N: "0" },
-      Name: { S: "Name" },
+      Name: { S: "" },
+      Contract: { S: "" },
+      TokenId: { S: "" },
+      Price: { N: "0" },
+      Status: { N: "0" },
+      Json: { S: "{}" },
+      Creator: { S: "" },
+      Link: { S: "" },
       DeleteFlag: { BOOL: "false" },
+      Created: { S: new Date() },
       Updated: { S: new Date() },
     },
   },

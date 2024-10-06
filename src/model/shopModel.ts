@@ -4,9 +4,15 @@ import dynamoService from "../service/dynamoService.js";
 
 const crud = CRUD.shop;
 
-const getItem = async (req) => {
+const getNewId = async () => {
   let params = crud.read;
-  params.Key.Id.N = req.params.id;
+  const maxid = await dynamoService.getMaxId(params.TableName, "Id");
+  return maxid + 1;
+};
+
+const getItem = async (id) => {
+  let params = crud.read;
+  params.Key.Id.N = id;
   return await dynamoService.getItem(params);
 };
 
@@ -20,10 +26,20 @@ const getAllList = async () => {
   return await dynamoService.getAllItems(crud.tableName);
 };
 
-const createItem = async (item) => {
+const createItem = async (entity) => {
+  console.log("shop create shop");
+  console.dir(entity);
   let params = crud.write;
-  params.Item.Id.N = item.id;
-  params.Item.Name.S = item.name;
+  params.Item.Id.N = entity.id;
+  params.Item.Eoa.S = entity.eoa;
+  params.Item.Name.S = entity.name;
+  params.Item.Seed.S = entity.seed;
+  params.Item.ChannelId.S = entity.channelId;
+  params.Item.Imgurl.S = entity.imgurl;
+  params.Item.Type.S = entity.type;
+  params.Item.Status.N = entity.status;
+  params.Item.Json.S = entity.json;
+  console.dir("CreateItem BODY" + JSON.stringify(params));
   await dynamoService.putItem(params);
 };
 
@@ -119,7 +135,33 @@ const listUpdate = async (discordList, dynamoList) => {
   console.log("add:" + addCnt + " update:" + updateCnt + " del:" + delCnt);
 };
 
+const getItemByEoa = async (eoa) => {
+  let params = crud.query;
+  params.KeyConditionExpression = "#PartitionName = :PartitionName";
+  params.FilterExpression = "#DeleteFlag = :DeleteFlag and #Eoa = :Eoa";
+  params.ExpressionAttributeNames = {
+    "#PartitionName": "PartitionName",
+    "#DeleteFlag": "DeleteFlag",
+    "#Eoa": "Eoa",
+  } as object;
+  params.ExpressionAttributeValues = {
+    ":PartitionName": { S: crud.partitionName },
+    ":DeleteFlag": { BOOL: false },
+    ":Eoa": { S: eoa },
+  } as object;
+  const result = await dynamoService.query(params);
+  if (result.Count == 1) {
+    let item = result.Items[0];
+    return item;
+  } else if (result.Count == 0) {
+    return { message: "Item not found" };
+  } else {
+    return { message: "many Item" };
+  }
+};
+
 const shopModel = {
+  getNewId,
   getList,
   getItem,
   getAllList,
@@ -128,5 +170,6 @@ const shopModel = {
   deleteItem,
   softDelete,
   listUpdate,
+  getItemByEoa,
 };
 export default shopModel;

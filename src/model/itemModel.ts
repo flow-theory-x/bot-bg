@@ -4,9 +4,15 @@ import dynamoService from "../service/dynamoService.js";
 
 const crud = CRUD.item;
 
-const getItem = async (req) => {
+const getNewId = async () => {
   let params = crud.read;
-  params.Key.Id.N = req.params.id;
+  const maxid = await dynamoService.getMaxId(params.TableName, "Id");
+  return maxid + 1;
+};
+
+const getItem = async (id) => {
+  let params = crud.read;
+  params.Key.Id.N = id;
   return await dynamoService.getItem(params);
 };
 
@@ -20,10 +26,18 @@ const getAllList = async () => {
   return await dynamoService.getAllItems(crud.tableName);
 };
 
-const createItem = async (item) => {
+const createItem = async (entity) => {
   let params = crud.write;
-  params.Item.Id.N = item.id;
-  params.Item.Name.S = item.name;
+  params.Item.Id.N = entity.id;
+  params.Item.Name.S = entity.name;
+  params.Item.Contract.S = entity.contract;
+  params.Item.TokenId.S = entity.tokenid;
+  params.Item.Price.N = entity.price;
+  params.Item.Status.N = entity.status;
+  params.Item.Json.S = entity.json;
+  params.Item.Creator.S = entity.creator;
+  params.Item.Link.S = entity.link;
+  console.dir("CreateItem BODY" + JSON.stringify(params));
   await dynamoService.putItem(params);
 };
 
@@ -125,7 +139,27 @@ const listUpdate = async (discordList, dynamoList) => {
   console.log("add:" + addCnt + " update:" + updateCnt + " del:" + delCnt);
 };
 
+const getItemByEoa = async (eoa) => {
+  let params = crud.query;
+  params.TableName = crud.tableName;
+  params.KeyConditionExpression = "#PartitionName = :PartitionName";
+  params.FilterExpression = "#DeleteFlag = :DeleteFlag and #Creator = :Creator";
+  params.ExpressionAttributeNames = {
+    "#PartitionName": "PartitionName",
+    "#DeleteFlag": "DeleteFlag",
+    "#Creator": "Creator",
+  } as object;
+  params.ExpressionAttributeValues = {
+    ":PartitionName": { S: crud.partitionName },
+    ":DeleteFlag": { BOOL: false },
+    ":Creator": { S: eoa },
+  } as object;
+  const result = await dynamoService.query(params);
+  return result.Items;
+};
+
 const roleModel = {
+  getNewId,
   getList,
   getItem,
   getAllList,
@@ -134,5 +168,6 @@ const roleModel = {
   deleteItem,
   softDelete,
   listUpdate,
+  getItemByEoa,
 };
 export default roleModel;
