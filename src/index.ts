@@ -14,10 +14,13 @@ export const handler = async (event) => {
         switch (req.data.name) {
           case "system":
             await systemController.connect(req);
+            break;
           case "creator":
             await creatorController.connect(req);
+            break;
           case "member":
             await memberController.connect(req);
+            break;
         }
         break;
       case "discord-response":

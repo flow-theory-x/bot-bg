@@ -99,7 +99,7 @@ const dynamoRoleUpdate = async (channelId) => {
   try {
     dynamoList = await roleModel.getAllList();
     await roleModel.listUpdate(discordList, dynamoList);
-    await discordService.sendDiscordMessage("update Member Table\n", channelId);
+    await discordService.sendDiscordMessage("update Role Table\n", channelId);
   } catch (e) {
     await discordService.sendDiscordMessage(
       "Member Table not exist\n",

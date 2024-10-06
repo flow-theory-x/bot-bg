@@ -14,9 +14,9 @@ const getAllList = async () => {
   return await dynamoService.getAllItems(crud.tableName);
 };
 
-const getMember = async (req) => {
+const getMember = async (discordId) => {
   let params = crud.read;
-  params.Key.DiscordId.N = req.params.id;
+  params.Key.DiscordId.N = discordId;
   return await dynamoService.getItem(params);
 };
 

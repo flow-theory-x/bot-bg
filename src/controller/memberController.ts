@@ -3,9 +3,7 @@ import { CRUD } from "../crud/crud.js";
 import util from "../common/util.js";
 import messages from "../common/messages.js";
 import discordService from "../service/discordService.js";
-import dynamoService from "../service/dynamoService.js";
-import memberModel from "../model/memberModel.js";
-import roleModel from "../model/roleModel.js";
+import memberService from "../service/memberService.js";
 
 const connect = async (req) => {
   let sendMes = req.data.options[0].value + "を受け付けました\n";
@@ -14,7 +12,11 @@ const connect = async (req) => {
       sendMes = messages.getVer(req);
       break;
     case "info":
-      sendMes = messages.getInfo(req);
+      const member_info = await getMemberInfo(req.member.user.id);
+      sendMes =
+        req.member.user.id +
+        " のメンバー情報を受け付けました\n" +
+        JSON.stringify(member_info, null, 2);
       break;
     case "update":
       sendMes = messages.getInfo(req);
@@ -33,6 +35,11 @@ const connect = async (req) => {
         "help";
   }
   await discordService.sendDiscordResponse(sendMes, req.token, req.channel_id);
+};
+
+const getMemberInfo = async (discordId) => {
+  const member = await memberService.getMemberInfo(discordId);
+  return member;
 };
 
 const memberController = {
