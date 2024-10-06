@@ -1,6 +1,7 @@
 import { CRUD } from "../crud/crud.js";
 import { CONST } from "../common/const.js";
 import dynamoService from "../service/dynamoService.js";
+import util from "../common/util.js";
 
 const crud = CRUD.item;
 
@@ -44,7 +45,7 @@ const createItem = async (entity) => {
 const updateItem = async (item) => {
   console.dir(item);
   if (item.roles.length == 0) {
-    item.roles.push("");
+    item.roles.push("0");
   }
   let params = crud.update;
   params.Key.Id.N = String(item.id);
@@ -155,7 +156,7 @@ const getItemByEoa = async (eoa) => {
     ":Creator": { S: eoa },
   } as object;
   const result = await dynamoService.query(params);
-  return result.Items;
+  return util.dynamoDbToJson(result.Items);
 };
 
 const roleModel = {

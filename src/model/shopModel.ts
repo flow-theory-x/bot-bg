@@ -1,6 +1,7 @@
 import { CRUD } from "../crud/crud.js";
 import { CONST } from "../common/const.js";
 import dynamoService from "../service/dynamoService.js";
+import util from "../common/util.js";
 
 const crud = CRUD.shop;
 
@@ -46,7 +47,7 @@ const createItem = async (entity) => {
 const updateItem = async (item) => {
   console.dir(item);
   if (item.roles.length == 0) {
-    item.roles.push("");
+    item.roles.push("0");
   }
   let params = crud.update;
   params.Key.Id.N = String(item.id);
@@ -152,7 +153,7 @@ const getItemByEoa = async (eoa) => {
   const result = await dynamoService.query(params);
   if (result.Count == 1) {
     let item = result.Items[0];
-    return item;
+    return util.dynamoDbToJson(item);
   } else if (result.Count == 0) {
     return { message: "Item not found" };
   } else {

@@ -1,4 +1,4 @@
-import { CONST } from "../common/const.js";
+import { CONST } from "../../common/const.js";
 export const testMessage = {
   app_permissions: "2248473734282819",
   application_id: "1291006277815763004",

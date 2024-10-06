@@ -27,6 +27,9 @@ elif [ $1 = 'local' ]; then
 elif [ $1 = 'test' ]; then
 	LAMBDA_FUNCTION_NAME=local-bg-test
 	cp custom_settings/bg_local.env ../dist/.env
+elif [ $1 = 'build' ]; then
+	LAMBDA_FUNCTION_NAME=local-bg-test
+	cp custom_settings/bg_local.env ../dist/.env
 else
 	exit
 fi
@@ -52,12 +55,18 @@ if [ $1 = 'local' ]; then
 	NODE_ENV=develop node index.js
 elif [ $1 = 'test' ]; then
 	echo "start test run";
-	NODE_ENV=develop node test.js
+	NODE_ENV=develop node testauto.js
+elif [ $1 = 'build' ]; then
+	echo "start test run";
+	echo "cd ${dir}/../dist;"
+	ls test
+	echo "NODE_ENV=develop node test.js [target]"
 else
 	zip -rq ${dir}/../${filename} ./*
 	zip ${dir}/../${filename} .env
 
 	zip --delete ${dir}/../${filename} test.js
+	zip --delete ${dir}/../${filename} testauto.js
 	zip --delete ${dir}/../${filename} test/*
 
 	cd ${dir}/../

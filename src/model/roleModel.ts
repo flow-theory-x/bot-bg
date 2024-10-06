@@ -31,7 +31,7 @@ const createItem = async (item) => {
 const updateItem = async (item) => {
   console.dir(item);
   if (item.roles.length == 0) {
-    item.roles.push("");
+    item.roles.push("0");
   }
   let params = crud.update;
   params.Key.Id.N = String(item.id);

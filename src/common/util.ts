@@ -1,3 +1,7 @@
+import { getToken } from "../service/tokenService.js";
+import shopModel from "../model/shopModel.js";
+import CryptoJS from "crypto-js";
+
 export const sleep = (waitTime) => {
   console.log("wait to " + waitTime);
   if (waitTime < 1) {
@@ -29,6 +33,10 @@ const dynamoDbToJson = (dynamoData) => {
         result[key] = valueObj.BOOL; // Boolean
       } else if (valueObj.M !== undefined) {
         result[key] = dynamoDbToJson([valueObj.M])[0]; // Map
+      } else if (valueObj.SS !== undefined) {
+        result[key] = valueObj.SS; // Map
+      } else if (valueObj.NS !== undefined) {
+        result[key] = valueObj.NS; // Map
       }
       // 必要に応じて他の型もここに追加可能
     }
@@ -42,10 +50,105 @@ const dynamoDbToJson = (dynamoData) => {
   }
 };
 
-const urils = {
-  dynamoDbToJson,
-  sleep,
-  log,
+export const getLocalTime = () => {
+  return new Date().toLocaleTimeString();
 };
 
-export default urils;
+export const fetchData = async (Url) => {
+  // IPSFの場合URLを置換
+  try {
+    const response = await fetch(Url);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("There was a problem with the fetch operation:", error);
+  }
+};
+
+function generateRandomString(length) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+// アドレスが同値かどうかを判定する関数
+export const isAddressesEqual = (address1: string, address2: string) => {
+  return address1.toLowerCase() === address2.toLowerCase();
+};
+
+const str2unixtime = (dateString) => {
+  const date = new Date(dateString);
+  const unixTime = Math.floor(date.getTime() / 1000);
+  return unixTime;
+};
+
+const getShortHash = async (tokenCaId) => {
+  const info = tokenCaId.split("/");
+  const caInfo = await getToken(info[0], "getInfo", null);
+  if (caInfo) {
+    const creator = caInfo[0];
+    const tokenInfo = await getToken(info[0], "tokenURI", info[1]);
+    const owner = await getToken(info[0], "ownerOf", info[1]);
+    const contractName = await getToken(info[0], "name", null);
+    const gallary: any = await shopModel.getItemByEoa(caInfo[0]);
+    const bytes = CryptoJS.AES.decrypt(
+      gallary.Seed,
+      process.env.AES_SECRET_KEY
+    );
+    const Seed = bytes.toString(CryptoJS.enc.Utf8);
+    const hash = CryptoJS.SHA256(Seed + tokenCaId);
+    const shortHash = hash.toString(CryptoJS.enc.Hex).substring(0, 12);
+    let image = tokenInfo.image;
+    if (image.length > 256) {
+      image = undefined;
+    }
+
+    return {
+      shortHash: shortHash,
+      channelId: gallary.ChannelId,
+      owner: owner,
+      creator: creator,
+      name: tokenInfo.name,
+      image: image,
+      gallaryName: gallary.Name,
+      gallarytype: gallary.Type,
+      gallaryInfo: JSON.parse(gallary.Json),
+      contractInfo: contractName,
+      pathInfo: info[1],
+    };
+  } else {
+    return {
+      shortHash: undefined,
+      eoa: undefined,
+      name: undefined,
+      image: undefined,
+      gallaryName: undefined,
+      gallarytype: undefined,
+      gallaryInfo: undefined,
+      contractInfo: undefined,
+      pathInfo: undefined,
+    };
+  }
+};
+
+//-----------
+
+const utils = {
+  sleep,
+  log,
+  dynamoDbToJson,
+  fetchData,
+  isAddressesEqual,
+  generateRandomString,
+  str2unixtime,
+  getShortHash,
+};
+
+export default utils;

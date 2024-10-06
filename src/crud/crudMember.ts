@@ -9,7 +9,7 @@ export const MEMBER = {
     TableName: TableName,
     AttributeDefinitions: [
       { AttributeName: "PartitionName", AttributeType: "S" },
-      { AttributeName: "DiscordId", AttributeType: "N" },
+      { AttributeName: "DiscordId", AttributeType: "S" },
     ],
     KeySchema: [
       { AttributeName: "PartitionName", KeyType: "HASH" },
@@ -24,7 +24,7 @@ export const MEMBER = {
     TableName: TableName,
     Item: {
       PartitionName: { S: PartitionName },
-      DiscordId: { N: "0" },
+      DiscordId: { S: "0" },
       Eoa: { S: "" },
       Name: { S: "" },
       Username: { S: "" },
@@ -40,14 +40,14 @@ export const MEMBER = {
     TableName: TableName,
     Key: {
       PartitionName: { S: PartitionName },
-      DiscordId: { N: "0" },
+      DiscordId: { S: "0" },
     },
   },
   update: {
     TableName: TableName,
     Key: {
       PartitionName: { S: PartitionName },
-      DiscordId: { N: "0" },
+      DiscordId: { S: "0" },
     },
     UpdateExpression: "SET Icon = :newVal",
     ExpressionAttributeNames: {},
@@ -57,7 +57,7 @@ export const MEMBER = {
     TableName: TableName,
     Key: {
       PartitionName: { S: PartitionName },
-      DiscordId: { N: "0" },
+      DiscordId: { S: "0" },
     },
   },
   query: {

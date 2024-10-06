@@ -1,5 +1,6 @@
 import express from "express";
 import { CONST } from "../common/const.js";
+import memberModel from "../model/memberModel.js";
 import shopModel from "../model/shopModel.js";
 import itemModel from "../model/itemModel.js";
 import util from "../common/util.js";
@@ -10,6 +11,21 @@ expressRouter.use(express.json());
 expressRouter.get("/", async (_, res) => {
   const result = "<h1>" + CONST.SERVER_INFO + " ver." + CONST.VERSION + "</h1>";
   res.send(result);
+});
+
+expressRouter.post("/regist", async (req, res) => {
+  const body = req.body;
+  const result = await memberModel.memberSetEoa(
+    body.discordId,
+    body.eoa,
+    body.secret
+  );
+  res.send(result);
+});
+
+expressRouter.get("/member/:eoa", async (req, res) => {
+  const response = await memberModel.getMemberByEoa(req.params.eoa);
+  res.send(util.dynamoDbToJson(response));
 });
 
 expressRouter.get("/shop", async (_, res) => {

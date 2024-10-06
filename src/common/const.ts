@@ -25,7 +25,11 @@ export const CONST = {
   DYNAMO_TABLE_PREFIX: process.env.DYNAMO_TABLE_PREFIX,
   DYNAMO_SOFT_DELETE: process.env.DYNAMO_SOFT_DELETE,
   DYNAMO_WRITE_WAIT_TIME: 200,
-  roles: {},
+
+  RPC_URL: process.env.RPC_URL,
+  MANAGE_CA: process.env.MANAGE_CA,
+  DONATE_CA: process.env.DONATE_CA,
+  AES_SECRET_KEY: process.env.AES_SECRET_KEY,
 
   RETRY_WAIT: 500,
   RETRY_LIMIT: 2,
