@@ -5,6 +5,8 @@ import systemController from "./controller/systemController.js";
 import creatorController from "./controller/creatorController.js";
 import memberController from "./controller/memberController.js";
 import registController from "./controller/registController.js";
+import editorController from "./controller/editorController.js";
+import getkeyController from "./controller/getkeyController.js";
 import discordService from "./service/discordService.js";
 import expressRouter from "./router/expressRouter.js"; // ルートのインポート
 
@@ -63,6 +65,12 @@ export const handler = async (event, context) => {
               break;
             case "regist":
               await registController.connect(req);
+              break;
+            case "editor":
+              await editorController.connect(req);
+              break;
+            case "getkey":
+              await getkeyController.connect(req);
               break;
           }
           break;

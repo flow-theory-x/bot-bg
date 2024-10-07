@@ -310,6 +310,15 @@ const memberSetEoa = async (id: String, eoa: String, secret: String) => {
   }
 };
 
+const discordId2eoa = async (discordId) => {
+  const member: any = await getMember(discordId);
+  if (member) {
+    return member.Eoa;
+  } else {
+    return "0x";
+  }
+};
+
 const memberModel = {
   getMemberRaw,
   getAllList,
@@ -324,5 +333,6 @@ const memberModel = {
   memberListUpdate,
   memberSetSecret,
   memberSetEoa,
+  discordId2eoa,
 };
 export default memberModel;

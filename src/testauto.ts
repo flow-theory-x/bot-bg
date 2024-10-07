@@ -1,4 +1,4 @@
-const target = "total";
+const target = "editor";
 
 import(`./test/${target}.js`)
   .then((module) => {

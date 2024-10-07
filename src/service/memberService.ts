@@ -94,9 +94,33 @@ const setTmpMember = async (message) => {
   return sendMessage;
 };
 
+const getEditor = async (message) => {
+  const eoa = await memberModel.discordId2eoa(message.member.user.id);
+  const secret = util.generateRandomString(12);
+  await memberModel.memberSetSecret(
+    message.member.user.id,
+    eoa,
+    secret,
+    message.member.roles
+  );
+
+  return (
+    "記事の執筆はこちらから \n EOA : " +
+    eoa +
+    "\n\n以下のURLにメタマスクをインストールしたブラウザでアクセスしウォレットを接続してログインしてください。" +
+    "\nURL: " +
+    CONST.PROVIDER_URL +
+    "/editor/" +
+    message.member.user.id +
+    "/" +
+    secret
+  );
+};
+
 const memberService = {
   setTmpMember,
   getMemberInfo,
+  getEditor,
 };
 
 export default memberService;
