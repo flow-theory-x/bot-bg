@@ -7,6 +7,7 @@ import memberController from "./controller/memberController.js";
 import registController from "./controller/registController.js";
 import editorController from "./controller/editorController.js";
 import getkeyController from "./controller/getkeyController.js";
+import applyController from "./controller/applyController.js";
 import discordService from "./service/discordService.js";
 import expressRouter from "./router/expressRouter.js"; // ルートのインポート
 
@@ -71,6 +72,9 @@ export const handler = async (event, context) => {
               break;
             case "getkey":
               await getkeyController.connect(req);
+              break;
+            case "apply":
+              await applyController.connect(req);
               break;
           }
           break;

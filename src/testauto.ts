@@ -1,4 +1,4 @@
-const target = "editor";
+const target = "apply";
 
 import(`./test/${target}.js`)
   .then((module) => {

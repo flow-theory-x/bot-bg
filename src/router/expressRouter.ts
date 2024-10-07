@@ -4,6 +4,7 @@ import memberModel from "../model/memberModel.js";
 import shopModel from "../model/shopModel.js";
 import itemModel from "../model/itemModel.js";
 import util from "../common/util.js";
+import discordService from "../service/discordService.js";
 
 const expressRouter = express.Router();
 expressRouter.use(express.json());
@@ -25,7 +26,7 @@ expressRouter.post("/regist", async (req, res) => {
 
 expressRouter.get("/member/:eoa", async (req, res) => {
   const response = await memberModel.getMemberByEoa(req.params.eoa);
-  res.send(util.dynamoDbToJson(response));
+  res.send(response);
 });
 
 expressRouter.get("/shop", async (_, res) => {
@@ -106,6 +107,66 @@ expressRouter.post("/item/update/:id", async (req, res) => {
   body.id = req.params.id;
   const response = await itemModel.createItem(body);
   res.send(util.dynamoDbToJson(response));
+});
+
+expressRouter.post("/transrequest", async (req, res) => {
+  let body = req.body;
+  const hashInfo = await util.getShortHash(body.ca + "/" + body.id);
+  if (hashInfo.shortHash == body.secret) {
+    const ownerDiscord: any = await memberModel.getMemberByEoa(body.eoa);
+    const creatorDiscord: any = await memberModel.getMemberByEoa(
+      hashInfo.creator
+    );
+    let OwnerID = body.eoa;
+    let CreatorID = hashInfo.creator;
+    let ChannelId = CONST.DISCORD_DEFAULT_CHANNEL_ID;
+
+    if (ownerDiscord.DiscordId) {
+      OwnerID = "<@" + ownerDiscord.DiscordId + ">";
+    }
+    if (creatorDiscord.DiscordId) {
+      CreatorID = "<@" + creatorDiscord.DiscordId + ">";
+    }
+    if (hashInfo.channelId) {
+      ChannelId = hashInfo.channelId;
+    }
+
+    const message =
+      CreatorID +
+      " さん。\n" +
+      OwnerID +
+      " さんのNFT購入[ " +
+      hashInfo.name +
+      " ]が認証されました。\n以下のURLよりこちらのNFTを\n" +
+      body.eoa +
+      "\nにお送りください。\n" +
+      CONST.PROVIDER_URL +
+      "/donate/" +
+      body.eoa +
+      "/" +
+      body.ca +
+      "/" +
+      body.id;
+
+    await discordService.sendDiscordMessage(message, ChannelId);
+
+    res.send({
+      message: "Your request has been approved.",
+      requestInfo: {
+        ca: body.ca,
+        id: body.id,
+        name: hashInfo.name,
+        image: hashInfo.image,
+        owner: body.eoa,
+        creator: hashInfo.creator,
+      },
+    });
+  }
+  res.send({
+    message: `${body.eoa} から不正なsecretが送信されました。${
+      body.ca + "/" + body.id
+    } ${hashInfo.shortHash} ${body.secret}`,
+  });
 });
 
 export default expressRouter;

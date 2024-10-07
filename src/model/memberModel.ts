@@ -1,8 +1,9 @@
 import { CRUD } from "../crud/crud.js";
 import { CONST } from "../common/const.js";
 import util from "../common/util.js";
+import memberUtil from "../common/memberUtli.js";
 import dynamoService from "../service/dynamoService.js";
-import discordService from "../service/discordService.js";
+// import discordService from "../service/discordService.js";
 const crud = CRUD.member;
 
 const getMemberList = async () => {
@@ -50,26 +51,7 @@ const memberCreate = async (member) => {
 };
 
 const memberUpdateForMes = async (message) => {
-  let member = {
-    id: message.member.user.id,
-    name: message.member.user.global_name,
-    nick: message.member.nick,
-    username: message.member.user.username,
-    roles: message.member.roles,
-    icon: "https://discord.com/assets/f9bb9c4af2b9c32a2c5ee0014661546d.png",
-  };
-
-  if (member.nick == null) {
-    member.nick = "";
-  }
-  if (message.member.roles.length == 0) {
-    member.roles = ["0"];
-  }
-  if (message.member.avatar) {
-    member.icon = `https://cdn.discordapp.com/guilds/${CONST.DISCORD_GUILD_ID}/users/${message.member.user.id}/avatars/${message.member.avatar}.png`;
-  } else if (message.member.user.avatar) {
-    member.icon = `https://cdn.discordapp.com/avatars/${message.member.user.id}/${message.member.user.avatar}.png`;
-  }
+  let member: any = memberUtil.disToSys(message.member);
   memberUpdate(member);
 };
 
@@ -102,10 +84,12 @@ const memberUpdate = async (member) => {
     ":updated": { S: new Date(new Date().getTime()) } as object,
   };
 
+  /*
   discordService.sendDiscordMessage(
     "<@" + member.id + ">の情報が更新されました\n information has been updated",
     CONST.DISCORD_DEFAULT_CHANNEL_ID
   );
+  */
 
   await dynamoService.updateItem(params);
 };
@@ -260,16 +244,6 @@ const memberSetSecret = async (
     "#Updated": "Updated",
   } as object;
   await dynamoService.updateItem(params);
-
-  const detail =
-    "dynamo あいことば登録 " +
-    id +
-    // member.DiscordId.S +
-    " name:" +
-    //member.Name.S +
-    " あいことば：" +
-    secret;
-  return detail;
 };
 
 const memberSetEoa = async (id: String, eoa: String, secret: String) => {
@@ -304,7 +278,7 @@ const memberSetEoa = async (id: String, eoa: String, secret: String) => {
       message += " 承認NG";
     }
 
-    return { message: message, result: result };
+    return { message: message, result: result, role: member.Roles };
   } catch (error) {
     return { message: "エラーが発生しました", result: false };
   }

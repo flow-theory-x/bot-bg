@@ -39,6 +39,11 @@ const getMemberInfo = async (discordId) => {
   }
 };
 
+const apply = async (message) => {
+  memberModel.memberUpdateForMes(message);
+  console.dir(message);
+};
+
 const setTmpMember = async (message) => {
   let sendMessage = "";
   const member: any = await memberModel.getMember(message.member.user.id);
@@ -118,6 +123,7 @@ const getEditor = async (message) => {
 };
 
 const memberService = {
+  apply,
   setTmpMember,
   getMemberInfo,
   getEditor,
