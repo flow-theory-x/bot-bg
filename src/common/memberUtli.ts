@@ -1,10 +1,9 @@
 import { CONST } from "./const.js";
 
 const dynToSys = (dynamoData) => {
-  console.log(`dis2Sys input ${JSON.stringify(dynamoData, null, 2)}`);
+  // console.log(`dis2Sys input ${JSON.stringify(dynamoData, null, 2)}`);
   const isArray = Array.isArray(dynamoData);
   const dataArray = Array.isArray(dynamoData) ? dynamoData : [dynamoData];
-  console.dir(dataArray);
   const result = dataArray.map((item) => {
     let result = {};
     for (const key in item) {
@@ -29,7 +28,7 @@ const dynToSys = (dynamoData) => {
     }
     return result;
   });
-  console.log(`dis2Sys input ${JSON.stringify(result, null, 2)}`);
+  // console.log(`dis2Sys input ${JSON.stringify(result, null, 2)}`);
   if (isArray) {
     return result;
   } else {

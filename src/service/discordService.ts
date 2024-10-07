@@ -3,6 +3,12 @@ import util from "../common/util.js";
 import { sendApi } from "../common/sendApi.js";
 import { setTimeout } from "timers/promises";
 import memberUtil from "../common/memberUtli.js";
+import { Client, GatewayIntentBits } from "discord.js";
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
+});
+
+client.login(CONST.DISCORD_BOT_KEY);
 
 let json = [];
 let roles = [];
@@ -171,6 +177,13 @@ const getGuildRoles = async (guildId, retry = 0) => {
   }
 };
 
+const setRoleId = async (memberId, roleId) => {
+  // console.log(`apply check memberId:${memberId} roleId${roleId}`);
+  const guild = await client.guilds.fetch(CONST.DISCORD_GUILD_ID);
+  const member = await guild.members.fetch(memberId);
+  member.roles.add(roleId);
+};
+
 const discordService = {
   sendDiscordResponse,
   sendDiscordMessage,
@@ -178,6 +191,7 @@ const discordService = {
   getMemberList,
   getDisplayData,
   getGuildRoles,
+  setRoleId,
 };
 
 export default discordService;
