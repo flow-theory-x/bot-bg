@@ -7,21 +7,6 @@ let json = [];
 let roles = [];
 let exec_id = 0;
 
-async function loadAllRoles() {
-  if (roles.length == 0) {
-    console.log("all role id 取得");
-    roles = await getGuildRoles(CONST.DISCORD_GUILD_ID);
-    if (roles.length == 0) {
-      roles.push({
-        id: "0000000000000000000",
-        name: "notiong",
-      });
-    }
-  } else {
-    console.log("role ids exist");
-  }
-}
-
 const getMemberList = async (nextid = null) => {
   let endpoint = `https://discord.com/api/v10/guilds/${CONST.DISCORD_GUILD_ID}/members?limit=1000`;
   if (nextid) {
@@ -101,13 +86,6 @@ const getMemberList = async (nextid = null) => {
 };
 
 const getList = async () => {
-  try {
-    await loadAllRoles();
-  } catch (error) {
-    console.error("メンバーロールの取得に失敗しました:", error.message);
-    throw new Error(`Error GetMemberRoll ERROR : ${error.message}`);
-  }
-  await util.sleep(3000);
   try {
     return await getMemberList();
   } catch (error) {
