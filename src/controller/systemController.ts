@@ -80,8 +80,9 @@ const dynamoList = async (channelId) => {
     const result = await dynamoService.getDisplayData(CRUD.member.tableName);
     return result;
   } catch (e) {
+    console.error("dynamoList error :", e);
     await discordService.sendDiscordMessage(
-      "Member table not exist\n",
+      `dynamoList can't get ${CRUD.member.tableName}\n`,
       channelId
     );
   }
@@ -93,6 +94,7 @@ const dynamoRoleUpdate = async (channelId) => {
   try {
     discordList = await discordService.getGuildRoles(CONST.DISCORD_GUILD_ID);
   } catch (e) {
+    console.error("dynamoRoleUpdate error 1 :", e);
     await discordService.sendDiscordMessage(
       "couldn't get discord role list. prease retry",
       channelId
@@ -104,8 +106,9 @@ const dynamoRoleUpdate = async (channelId) => {
     await roleModel.listUpdate(discordList, dynamoList);
     await discordService.sendDiscordMessage("update Role Table\n", channelId);
   } catch (e) {
+    console.error("dynamoRoleUpdate 2 error :", e);
     await discordService.sendDiscordMessage(
-      "Member Table not exist\n",
+      "Role Table Update failed\n",
       channelId
     );
   }
@@ -117,6 +120,7 @@ const dynamoMemberUpdate = async (channelId) => {
   try {
     discordList = await discordService.getMemberList();
   } catch (e) {
+    console.error("dynamoMemberUpdate 1 error :", e);
     await discordService.sendDiscordMessage(
       "couldn't get discord member list. prease retry",
       channelId
@@ -129,8 +133,9 @@ const dynamoMemberUpdate = async (channelId) => {
     await memberModel.memberListUpdate(discordList, dynamoList);
     await discordService.sendDiscordMessage("update Member Table\n", channelId);
   } catch (e) {
+    console.error("dynamoMemberUpdate 2 error :", e);
     await discordService.sendDiscordMessage(
-      "Member Table not exist\n",
+      "dynamoMemberUpdate failed\n",
       channelId
     );
   }

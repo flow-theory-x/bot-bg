@@ -145,18 +145,34 @@ const memberListUpdate = async (discordList, dynamoList) => {
       addCnt++;
       await memberModel.memberCreate(member);
     } else {
-      const dcRoles = JSON.stringify(
-        member.roles.filter((role) => role !== "").sort()
-      );
-      const dyRoles = JSON.stringify(
-        filteredItems[0].Roles.SS.filter((role) => role !== "").sort()
-      );
+      let dcRoles = '["0"]';
+      let dyRoles = '["0"]';
+      if (Array.isArray(member.roles) && member.roles.length > 0) {
+        dcRoles = JSON.stringify(member.roles.sort());
+      }
+      if (
+        Array.isArray(filteredItems[0].Roles.SS) &&
+        filteredItems[0].Roles.SS.length > 0
+      ) {
+        dyRoles = JSON.stringify(filteredItems[0].Roles.SS.sort());
+      }
       if (
         member.name !== filteredItems[0].Name.S ||
         member.username !== filteredItems[0].Username.S ||
+        member.nick !== filteredItems[0].Nick.S ||
         member.icon !== filteredItems[0].Icon.S ||
         dcRoles !== dyRoles
       ) {
+        console.log(`discord: ${JSON.stringify(member.name)}`);
+        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Name.S)}`);
+        console.log(`discord: ${JSON.stringify(member.username)}`);
+        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Username.S)}`);
+        console.log(`discord: ${JSON.stringify(member.nick)}`);
+        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Nick.S)}`);
+        console.log(`discord: ${JSON.stringify(member.icon)}`);
+        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Icon.S)}`);
+        console.log(`discord: ${JSON.stringify(dcRoles)}`);
+        console.log(`dynamo : ${JSON.stringify(dyRoles)}`);
         updateCnt++;
         await memberModel.memberUpdate(member);
       }

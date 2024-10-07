@@ -1,6 +1,7 @@
 import { CONST } from "./const.js";
 
 const dynToSys = (dynamoData) => {
+  console.log(`dis2Sys input ${JSON.stringify(dynamoData, null, 2)}`);
   const isArray = Array.isArray(dynamoData);
   const dataArray = Array.isArray(dynamoData) ? dynamoData : [dynamoData];
   console.dir(dataArray);
@@ -28,6 +29,7 @@ const dynToSys = (dynamoData) => {
     }
     return result;
   });
+  console.log(`dis2Sys input ${JSON.stringify(result, null, 2)}`);
   if (isArray) {
     return result;
   } else {
@@ -36,6 +38,7 @@ const dynToSys = (dynamoData) => {
 };
 
 const disToSys = (disMember) => {
+  console.log(`dis2Sys input ${JSON.stringify(disMember, null, 2)}`);
   let member = {
     id: disMember.user.id,
     name: disMember.user.global_name,
@@ -56,6 +59,7 @@ const disToSys = (disMember) => {
   } else if (disMember.user.avatar) {
     member.icon = `https://cdn.discordapp.com/avatars/${disMember.user.id}/${disMember.user.avatar}.png`;
   }
+  console.log(`dis2Sys out ${JSON.stringify(member, null, 2)}`);
   return member;
 };
 

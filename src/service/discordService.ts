@@ -2,6 +2,7 @@ import { CONST } from "../common/const.js";
 import util from "../common/util.js";
 import { sendApi } from "../common/sendApi.js";
 import { setTimeout } from "timers/promises";
+import memberUtil from "../common/memberUtli.js";
 
 let json = [];
 let roles = [];
@@ -19,35 +20,11 @@ const getMemberList = async (nextid = null) => {
 
   for (let i = 0; i < result.length; i++) {
     const data = result[i];
-    console.log(`MEMBER DATA ${JSON.stringify(result, null, 2)}`);
     if (data.user.bot) {
       continue;
     }
-
-    const member: any = {};
-    member.id = data.user.id;
-    member.nick = data.nick;
-    member.name = data.user.global_name;
-    member.username = data.user.username;
-    member.roles = data.roles;
-    if (member.nick == null) {
-      member.nick = "";
-    }
-    if (member.roles.length == 0) {
-      member.roles = ["0"];
-    }
-    if (data.avatar) {
-      member.icon = `https://cdn.discordapp.com/guilds/${CONST.DISCORD_GUILD_ID}/users/${data.user.id}/avatars/${data.avatar}.png`;
-    } else if (data.user.avatar) {
-      member.icon = `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.png`;
-    } else {
-      member.icon =
-        "https://discord.com/assets/f9bb9c4af2b9c32a2c5ee0014661546d.png";
-    }
-
+    let member: any = memberUtil.disToSys(data);
     member.join = data.joined_at;
-
-    console.log(`sanitized DATA ${JSON.stringify(member, null, 2)}`);
     json.push(member);
   }
 
@@ -180,7 +157,7 @@ const getGuildRoles = async (guildId, retry = 0) => {
   try {
     const result = await sendApi(url, "get");
     console.error(
-      `### ロールを取得完了 ${JSON.stringify(result)} eid:${eid} ###`
+      `### ロールを取得完了 ${JSON.stringify(result, null, 2)} eid:${eid} ###`
     );
     return result;
   } catch {

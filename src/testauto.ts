@@ -1,4 +1,4 @@
-const target = "connect";
+const target = "total";
 
 import(`./test/${target}.js`)
   .then((module) => {
