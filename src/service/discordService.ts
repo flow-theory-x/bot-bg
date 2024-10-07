@@ -16,22 +16,15 @@ const getMemberList = async (nextid = null) => {
   }
 
   const result = await sendApi(endpoint, "get");
-  console.log(
-    `DISCORD API GUILDSから取得したメンバーリスト ${JSON.stringify(
-      result,
-      null,
-      2
-    )}`
-  );
 
   for (let i = 0; i < result.length; i++) {
     const data = result[i];
+    console.log(`MEMBER DATA ${JSON.stringify(result, null, 2)}`);
     if (data.user.bot) {
       continue;
     }
 
     const member: any = {};
-
     member.id = data.user.id;
     member.nick = data.nick;
     member.name = data.user.global_name;
@@ -43,19 +36,6 @@ const getMemberList = async (nextid = null) => {
     if (member.roles.length == 0) {
       member.roles = ["0"];
     }
-
-    /*
-    for (let i = 0; i < data.roles.length; i++) {
-      member.roles.push(String(data.roles[i]));
-    }
-    member.roles = data.roles
-      .map((roleId) => {
-        const role = roles.find((r) => r.id === roleId);
-        return role ? role.name : null;
-      })
-      .filter(Boolean);
-    */
-
     if (data.avatar) {
       member.icon = `https://cdn.discordapp.com/guilds/${CONST.DISCORD_GUILD_ID}/users/${data.user.id}/avatars/${data.avatar}.png`;
     } else if (data.user.avatar) {
@@ -66,9 +46,9 @@ const getMemberList = async (nextid = null) => {
     }
 
     member.join = data.joined_at;
-    console.log("push member : " + JSON.stringify(member));
+
+    console.log(`sanitized DATA ${JSON.stringify(member, null, 2)}`);
     json.push(member);
-    console.log("json result" + JSON.stringify(json, null, 2));
   }
 
   if (result.length === 1000) {
@@ -81,7 +61,6 @@ const getMemberList = async (nextid = null) => {
     await getMemberList(result[1000 - 1].user.id);
   }
 
-  //完了処理
   return json;
 };
 
