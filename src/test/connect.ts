@@ -10,7 +10,6 @@ import { testMessage } from "./event/testEvent.js";
 // ----
 export const test = async () => {
   const mainCommand = "system";
-  //const mainCommand = "regist";
   const mode = [
     "ver",
     "info",
@@ -21,18 +20,9 @@ export const test = async () => {
     "createTables",
     "0xCf20a6EcBBedB403DB466D669229d9Ee379C433f",
   ];
-  //const target = ["0xCf20a6EcBBedB403DB466D669229d9Ee379C433f"];
   const target = ["memberUpdate"];
-  //const target = [];
   const waitSec = 3000;
-  const longwaitSec = 10000;
 
-  await discordService.sendDiscordMessage(
-    "########################################################" +
-      "\nLOCAL TEST START\n" +
-      "########################################################",
-    CONST.DISCORD_DEVELOP_CHANNEL_ID
-  );
   await util.sleep(waitSec);
   for (let key in mode) {
     if (target.length > 0 && !target.includes(mode[key])) {
@@ -62,13 +52,5 @@ export const test = async () => {
         await registController.connect(testMessage);
         break;
     }
-    await util.sleep(longwaitSec);
   }
-
-  await discordService.sendDiscordMessage(
-    "########################################################" +
-      "\nLOCAL TEST COMPLETE\n" +
-      "########################################################",
-    CONST.DISCORD_DEVELOP_CHANNEL_ID
-  );
 };

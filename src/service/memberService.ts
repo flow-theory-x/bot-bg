@@ -33,7 +33,7 @@ const getMemberInfo = async (discordId) => {
     }
   } catch (e) {
     await discordService.sendDiscordMessage(
-      "id: ${discordId} Member not exist\n",
+      `id: ${discordId} Member not exist\n`,
       CONST.DISCORD_DEFAULT_CHANNEL_ID
     );
   }
