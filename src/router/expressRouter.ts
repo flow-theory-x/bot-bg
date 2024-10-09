@@ -113,28 +113,28 @@ expressRouter.post("/transrequest", async (req, res) => {
   let body = req.body;
   const hashInfo = await util.getShortHash(body.ca + "/" + body.id);
   if (hashInfo.shortHash == body.secret) {
-    const ownerDiscord: any = await memberModel.getMemberByEoa(body.eoa);
-    const creatorDiscord: any = await memberModel.getMemberByEoa(
-      hashInfo.creator
-    );
-    let OwnerID = body.eoa;
-    let CreatorID = hashInfo.creator;
+    const buyerDiscord: any = await memberModel.getMemberByEoa(body.eoa);
+    const ownerDiscord: any = await memberModel.getMemberByEoa(hashInfo.owner);
+    let BuyerID = body.eoa;
+    let OwnerID = hashInfo.owner;
     let ChannelId = CONST.DISCORD_DEFAULT_CHANNEL_ID;
+    let messageSend = false;
 
+    if (buyerDiscord.DiscordId) {
+      BuyerID = "<@" + buyerDiscord.DiscordId + ">";
+      messageSend = true;
+    }
     if (ownerDiscord.DiscordId) {
       OwnerID = "<@" + ownerDiscord.DiscordId + ">";
-    }
-    if (creatorDiscord.DiscordId) {
-      CreatorID = "<@" + creatorDiscord.DiscordId + ">";
     }
     if (hashInfo.channelId) {
       ChannelId = hashInfo.channelId;
     }
 
     const message =
-      CreatorID +
-      " さん。\n" +
       OwnerID +
+      " さん。\n" +
+      BuyerID +
       " さんのNFT購入[ " +
       hashInfo.name +
       " ]が認証されました。\n以下のURLよりこちらのNFTを\n" +
@@ -149,9 +149,17 @@ expressRouter.post("/transrequest", async (req, res) => {
       body.id;
 
     await discordService.sendDiscordMessage(message, ChannelId);
+    if (messageSend) {
+      await discordService.sendDiscordDm(message, buyerDiscord.DiscordId);
+    } else {
+      await discordService.sendDiscordMessage(
+        message,
+        CONST.DISCORD_DEFAULT_CHANNEL_ID
+      );
+    }
 
     res.send({
-      message: "Your request has been approved.",
+      message: "APPROVED",
       requestInfo: {
         ca: body.ca,
         id: body.id,
@@ -162,11 +170,7 @@ expressRouter.post("/transrequest", async (req, res) => {
       },
     });
   }
-  res.send({
-    message: `${body.eoa} から不正なsecretが送信されました。${
-      body.ca + "/" + body.id
-    } ${hashInfo.shortHash} ${body.secret}`,
-  });
+  res.send({ message: "NOT_APPROVED" });
 });
 
 export default expressRouter;
