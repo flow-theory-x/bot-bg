@@ -113,28 +113,26 @@ expressRouter.post("/transrequest", async (req, res) => {
   let body = req.body;
   const hashInfo = await util.getShortHash(body.ca + "/" + body.id);
   if (hashInfo.shortHash == body.secret) {
-    const ownerDiscord: any = await memberModel.getMemberByEoa(body.eoa);
-    const creatorDiscord: any = await memberModel.getMemberByEoa(
-      hashInfo.creator
-    );
-    let OwnerID = body.eoa;
-    let CreatorID = hashInfo.creator;
+    const buyerDiscord: any = await memberModel.getMemberByEoa(body.eoa);
+    const ownerDiscord: any = await memberModel.getMemberByEoa(hashInfo.owner);
+    let BuyerID = body.eoa;
+    let OwnerID = hashInfo.owner;
     let ChannelId = CONST.DISCORD_DEFAULT_CHANNEL_ID;
 
+    if (buyerDiscord.DiscordId) {
+      BuyerID = "<@" + buyerDiscord.DiscordId + ">";
+    }
     if (ownerDiscord.DiscordId) {
       OwnerID = "<@" + ownerDiscord.DiscordId + ">";
-    }
-    if (creatorDiscord.DiscordId) {
-      CreatorID = "<@" + creatorDiscord.DiscordId + ">";
     }
     if (hashInfo.channelId) {
       ChannelId = hashInfo.channelId;
     }
 
     const message =
-      CreatorID +
-      " さん。\n" +
       OwnerID +
+      " さん。\n" +
+      BuyerID +
       " さんのNFT購入[ " +
       hashInfo.name +
       " ]が認証されました。\n以下のURLよりこちらのNFTを\n" +
