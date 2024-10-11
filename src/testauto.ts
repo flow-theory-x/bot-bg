@@ -1,4 +1,4 @@
-const target = "restore";
+const target = "getMemberInfo";
 
 import(`./test/${target}.js`)
   .then((module) => {

@@ -8,7 +8,6 @@ import ownerService from "../service/ownerService.js";
 import memberUtil from "../common/memberUtli.js";
 
 const getMemberInfo = async (discordId) => {
-  console.log(`getMemberInfo: ${discordId}`);
   try {
     const rolesData = await roleModel.getAllList();
     const roleMap = rolesData.reduce((map, role) => {
@@ -16,17 +15,17 @@ const getMemberInfo = async (discordId) => {
       return map;
     }, {} as { [key: string]: string });
     const dynamoData: any = await memberModel.getMember(discordId);
-    const roleIds = dynamoData.Roles.NS;
+    const roleIds = dynamoData.Roles;
     const roleNames = roleIds.map((id) => roleMap[id]);
 
     if (!dynamoData.DeleteFlag.BOOL) {
       return {
-        discordId: dynamoData.DiscordId.S,
-        eoa: dynamoData.Eoa.S,
-        name: dynamoData.Name.S,
-        nick: dynamoData.Nick.S,
-        userName: dynamoData.Username.S,
-        icon: dynamoData.Icon.S,
+        discordId: dynamoData.DiscordId,
+        eoa: dynamoData.Eoa,
+        name: dynamoData.Name,
+        nick: dynamoData.Nick,
+        userName: dynamoData.Username,
+        icon: dynamoData.Icon,
         roleIds: roleIds,
         roleNames: roleNames,
       };

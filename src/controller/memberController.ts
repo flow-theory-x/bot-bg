@@ -4,9 +4,11 @@ import util from "../common/util.js";
 import messages from "../common/messages.js";
 import discordService from "../service/discordService.js";
 import memberService from "../service/memberService.js";
+import memberModel from "../model/memberModel.js";
 
 const connect = async (req) => {
   let sendMes = req.data.options[0].value + "を受け付けました\n";
+  await memberModel.memberUpdateForMes(req);
   switch (req.data.options[0].value) {
     case "ver":
       sendMes = messages.getVer(req);
