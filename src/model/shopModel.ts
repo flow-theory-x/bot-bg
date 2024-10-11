@@ -1,7 +1,7 @@
 import { CRUD } from "../crud/crud.js";
 import { CONST } from "../common/const.js";
 import dynamoService from "../service/dynamoService.js";
-import util from "../common/util.js";
+import memberUtil from "../common/memberUtli.js";
 
 const crud = CRUD.shop;
 
@@ -153,7 +153,7 @@ const getItemByEoa = async (eoa) => {
   const result = await dynamoService.query(params);
   if (result.Count == 1) {
     let item = result.Items[0];
-    return util.dynamoDbToJson(item);
+    return memberUtil.dynToSys(item);
   } else if (result.Count == 0) {
     return { message: "Item not found" };
   } else {

@@ -115,7 +115,6 @@ const dynamoRoleUpdate = async (channelId) => {
 };
 
 const dynamoMemberUpdate = async (channelId) => {
-  let dynamoList = [];
   let discordList = [];
   try {
     discordList = await discordService.getMemberList();
@@ -129,7 +128,7 @@ const dynamoMemberUpdate = async (channelId) => {
   }
 
   try {
-    dynamoList = await memberModel.getAllList();
+    const dynamoList = await memberModel.getAllList();
     await memberModel.memberListUpdate(discordList, dynamoList);
     await discordService.sendDiscordMessage("update Member Table\n", channelId);
   } catch (e) {

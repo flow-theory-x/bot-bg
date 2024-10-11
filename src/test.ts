@@ -1,6 +1,6 @@
 async function dynamicImport(target: string) {
   try {
-    const module = await import(`./test/${target}.js`);
+    const module = await import(`./test/unit/${target}.js`);
     module.test();
   } catch (err) {
     console.error("Module could not be loaded:", err);

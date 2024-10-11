@@ -59,7 +59,7 @@ elif [ $1 = 'test' ]; then
 elif [ $1 = 'build' ]; then
 	echo "start test run";
 	echo "cd ${dir}/../dist;"
-	ls test
+	ls test/unit
 	echo "NODE_ENV=develop node test.js [target]"
 else
 	zip -rq ${dir}/../${filename} ./*

@@ -5,6 +5,7 @@ import memberModel from "../model/memberModel.js";
 import shopModel from "../model/shopModel.js";
 import itemModel from "../model/itemModel.js";
 import util from "../common/util.js";
+import memberUtil from "../common/memberUtli.js";
 import discordService from "../service/discordService.js";
 import memberService from "../service/memberService.js";
 
@@ -29,7 +30,7 @@ expressRouter.post("/regist", async (req, res) => {
 
 expressRouter.get("/member", async (req, res) => {
   const response = await memberModel.getAllList();
-  res.send(util.dynamoDbToJson(response));
+  res.send(memberUtil.dynToSys(response));
 });
 
 expressRouter.get("/member/restore", async (req, res) => {
@@ -50,12 +51,12 @@ expressRouter.get("/member/:eoa", async (req, res) => {
 
 expressRouter.get("/shop", async (_, res) => {
   const response = await shopModel.getAllList();
-  res.send(util.dynamoDbToJson(response));
+  res.send(memberUtil.dynToSys(response));
 });
 
 expressRouter.get("/shop/id/:id", async (req, res) => {
   const response = await shopModel.getItem(req.params.id);
-  res.send(util.dynamoDbToJson(response));
+  res.send(memberUtil.dynToSys(response));
 });
 
 expressRouter.get("/shop/eoa/:eoa", async (req, res) => {
@@ -91,12 +92,12 @@ expressRouter.post("/shop/update/:id", async (req, res) => {
 
 expressRouter.get("/item", async (_, res) => {
   const response = await itemModel.getAllList();
-  res.send(util.dynamoDbToJson(response));
+  res.send(memberUtil.dynToSys(response));
 });
 
 expressRouter.get("/item/id/:id", async (req, res) => {
   const response = await itemModel.getItem(req.params.id);
-  res.send(util.dynamoDbToJson(response));
+  res.send(memberUtil.dynToSys(response));
 });
 
 expressRouter.get("/item/eoa/:eoa", async (req, res) => {
@@ -125,7 +126,7 @@ expressRouter.post("/item/update/:id", async (req, res) => {
   const body = req.body;
   body.id = req.params.id;
   const response = await itemModel.createItem(body);
-  res.send(util.dynamoDbToJson(response));
+  res.send(memberUtil.dynToSys(response));
 });
 
 expressRouter.post("/transrequest", async (req, res) => {

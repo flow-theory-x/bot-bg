@@ -1,6 +1,6 @@
 const target = "getMemberInfo";
 
-import(`./test/${target}.js`)
+import(`./test/unit/${target}.js`)
   .then((module) => {
     module.test();
   })

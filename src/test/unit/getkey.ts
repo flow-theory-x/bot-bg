@@ -1,7 +1,7 @@
-import { CONST } from "../common/const.js";
-import getkeyController from "../controller/getkeyController.js";
-import util from "../common/util.js";
-import { testMessage } from "./event/testEvent.js";
+import { CONST } from "../../common/const.js";
+import getkeyController from "../../controller/getkeyController.js";
+import util from "../../common/util.js";
+import { testMessage } from "../event/testEvent.js";
 
 // ----
 export const test = async () => {

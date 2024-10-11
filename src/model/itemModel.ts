@@ -1,7 +1,7 @@
 import { CRUD } from "../crud/crud.js";
 import { CONST } from "../common/const.js";
 import dynamoService from "../service/dynamoService.js";
-import util from "../common/util.js";
+import memberUtil from "../common/memberUtli.js";
 
 const crud = CRUD.item;
 
@@ -156,7 +156,7 @@ const getItemByEoa = async (eoa) => {
     ":Creator": { S: eoa },
   } as object;
   const result = await dynamoService.query(params);
-  return util.dynamoDbToJson(result.Items);
+  return memberUtil.dynToSys(result.Items);
 };
 
 const roleModel = {

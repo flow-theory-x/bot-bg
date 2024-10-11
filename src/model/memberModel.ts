@@ -9,18 +9,19 @@ const crud = CRUD.member;
 const getMemberList = async () => {
   let params = crud.query;
   const result = await dynamoService.query(params);
-  return result;
+  return memberUtil.dynToSys(result);
 };
 
 const getAllList = async () => {
-  return await dynamoService.getAllItems(crud.tableName);
+  const result = await dynamoService.getAllItems(crud.tableName);
+  return memberUtil.dynToSys(result);
 };
 
 const getMember = async (discordId) => {
   let params = crud.read;
   params.Key.DiscordId.S = discordId;
   const result = await dynamoService.getItem(params);
-  return util.dynamoDbToJson(result);
+  return memberUtil.dynToSys(result);
 };
 
 const getMemberRaw = async (discordId) => {
@@ -99,22 +100,25 @@ const memberUpdate = async (member) => {
 
 const memberDelete = async (member) => {
   console.log(
-    "dynamo メンバー削除 " + member.DiscordId.S + " name:" + member.Name.S
+    "dynamo メンバー削除 " + member.DiscordId + " name:" + member.Name
   );
   let params = crud.delete;
-  params.Key.DiscordId.S = member.DiscordId.S;
+  params.Key.DiscordId.S = member.DiscordId;
   await dynamoService.deleteItem(params);
 };
 
 const memberSoftDelete = async (member) => {
   console.log(
-    "dynamo メンバー退会 " + member.DiscordId.S + " name:" + member.Name.S
+    "dynamo メンバー退会 " + member.DiscordId + " name:" + member.Name
   );
   let params = crud.update;
-  params.Key.DiscordId.S = member.DiscordId.S;
-  params.UpdateExpression = "SET DeleteFlag = :newVal";
+  params.Key.DiscordId.S = member.DiscordId;
+  params.UpdateExpression = "SET #DeleteFlag = :deleteFlag";
+  params.ExpressionAttributeNames = {
+    "#DeleteFlag": "DeleteFlag",
+  };
   params.ExpressionAttributeValues = {
-    ":newVal": { BOOL: true } as object,
+    ":deleteFlag": { BOOL: true } as object,
   };
   await dynamoService.updateItem(params);
 };
@@ -126,7 +130,7 @@ const memberListUpdate = async (discordList, dynamoList) => {
   for (let key in discordList) {
     const member = discordList[key];
     const filteredItems = dynamoList.filter(
-      (item) => String(item.DiscordId.S) === String(member.id)
+      (item) => String(item.DiscordId) === String(member.id)
     );
     if (filteredItems.length == 0) {
       addCnt++;
@@ -138,26 +142,26 @@ const memberListUpdate = async (discordList, dynamoList) => {
         dcRoles = JSON.stringify(member.roles.sort());
       }
       if (
-        Array.isArray(filteredItems[0].Roles.SS) &&
-        filteredItems[0].Roles.SS.length > 0
+        Array.isArray(filteredItems[0].Roles) &&
+        filteredItems[0].Roles.length > 0
       ) {
-        dyRoles = JSON.stringify(filteredItems[0].Roles.SS.sort());
+        dyRoles = JSON.stringify(filteredItems[0].Roles.sort());
       }
       if (
-        member.name !== filteredItems[0].Name.S ||
-        member.username !== filteredItems[0].Username.S ||
-        member.nick !== filteredItems[0].Nick.S ||
-        member.icon !== filteredItems[0].Icon.S ||
+        member.name !== filteredItems[0].Name ||
+        member.username !== filteredItems[0].Username ||
+        member.nick !== filteredItems[0].Nick ||
+        member.icon !== filteredItems[0].Icon ||
         dcRoles !== dyRoles
       ) {
         console.log(`discord: ${JSON.stringify(member.name)}`);
-        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Name.S)}`);
+        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Name)}`);
         console.log(`discord: ${JSON.stringify(member.username)}`);
-        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Username.S)}`);
+        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Username)}`);
         console.log(`discord: ${JSON.stringify(member.nick)}`);
-        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Nick.S)}`);
+        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Nick)}`);
         console.log(`discord: ${JSON.stringify(member.icon)}`);
-        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Icon.S)}`);
+        console.log(`dynamo : ${JSON.stringify(filteredItems[0].Icon)}`);
         console.log(`discord: ${JSON.stringify(dcRoles)}`);
         console.log(`dynamo : ${JSON.stringify(dyRoles)}`);
         updateCnt++;
@@ -170,7 +174,7 @@ const memberListUpdate = async (discordList, dynamoList) => {
     const member = dynamoList[key];
     if (member) {
       const filteredItems = discordList.filter(
-        (item) => String(item.id) === String(member.DiscordId.S)
+        (item) => String(item.id) === String(member.DiscordId)
       );
       if (filteredItems.length == 0) {
         delCnt++;
@@ -207,7 +211,7 @@ const getMemberByEoa = async (eoa) => {
     let user = result.Items[0];
     delete user.TmpEoa;
     delete user.Secret;
-    return util.dynamoDbToJson(user);
+    return memberUtil.dynToSys(user);
   } else if (result.Count == 0) {
     return { message: "member not found" };
   } else {

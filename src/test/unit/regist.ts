@@ -1,27 +1,20 @@
-import { CONST } from "../common/const.js";
-import systemController from "../controller/systemController.js";
-import creatorController from "../controller/creatorController.js";
-import memberController from "../controller/memberController.js";
-import registController from "../controller/registController.js";
-import util from "../common/util.js";
-import discordService from "../service/discordService.js";
-import { testMessage } from "./event/testEvent.js";
+import { CONST } from "../../common/const.js";
+import systemController from "../../controller/systemController.js";
+import creatorController from "../../controller/creatorController.js";
+import memberController from "../../controller/memberController.js";
+import registController from "../../controller/registController.js";
+import util from "../../common/util.js";
+import discordService from "../../service/discordService.js";
+import { testMessage } from "../event/testEvent.js";
 
 // ----
 export const test = async () => {
-  const mainCommand = "system";
-  const mode = [
-    "ver",
-    "info",
-    "roleUpdate",
-    "memberUpdate",
-    "getDiscord",
-    "getDynamo",
-    "createTables",
-    "0xCf20a6EcBBedB403DB466D669229d9Ee379C433f",
-  ];
-  const target = ["memberUpdate"];
+  const mainCommand = "regist";
+  const mode = ["0xCf20a6EcBBedB403DB466D669229d9Ee379C433f"];
+  const target = ["0xCf20a6EcBBedB403DB466D669229d9Ee379C433f"];
+
   const waitSec = 3000;
+  const longwaitSec = 10000;
 
   await util.sleep(waitSec);
   for (let key in mode) {

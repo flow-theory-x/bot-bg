@@ -18,7 +18,7 @@ const getMemberInfo = async (discordId) => {
     const roleIds = dynamoData.Roles;
     const roleNames = roleIds.map((id) => roleMap[id]);
 
-    if (!dynamoData.DeleteFlag.BOOL) {
+    if (!dynamoData.DeleteFlag) {
       return {
         discordId: dynamoData.DiscordId,
         eoa: dynamoData.Eoa,

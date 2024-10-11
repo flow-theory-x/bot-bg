@@ -1,5 +1,5 @@
-import { testMessage } from "./event/testEvent.js";
-import applyController from "../controller/applyController.js";
+import { testMessage } from "../event/testEvent.js";
+import applyController from "../../controller/applyController.js";
 
 // ----
 export const test = async () => {

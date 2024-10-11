@@ -1,11 +1,9 @@
-import { CONST } from "../common/const.js";
-import systemController from "../controller/systemController.js";
-import creatorController from "../controller/creatorController.js";
-import memberController from "../controller/memberController.js";
-import registController from "../controller/registController.js";
-import util from "../common/util.js";
-import discordService from "../service/discordService.js";
-import { testMessage } from "./event/testEvent.js";
+import systemController from "../../controller/systemController.js";
+import creatorController from "../../controller/creatorController.js";
+import memberController from "../../controller/memberController.js";
+import registController from "../../controller/registController.js";
+import util from "../../common/util.js";
+import { testMessage } from "../event/testEvent.js";
 
 // ----
 export const test = async () => {
