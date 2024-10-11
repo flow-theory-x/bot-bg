@@ -3,6 +3,7 @@ dotenv.config();
 
 export const CONST = {
   API_ENV: process.env.API_ENV,
+  INTERACTION_URL: process.env.INTERACTION_URL,
   API_URL: process.env.API_URL,
   VERSION: process.env.VERSION,
   DEPLOY_DATETIME: process.env.DEPLOY_DATETIME,

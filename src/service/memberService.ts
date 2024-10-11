@@ -5,6 +5,7 @@ import roleModel from "../model/roleModel.js";
 import discordService from "../service/discordService.js";
 import donateService from "../service/donateService.js";
 import ownerService from "../service/ownerService.js";
+import memberUtil from "../common/memberUtli.js";
 
 const getMemberInfo = async (discordId) => {
   console.log(`getMemberInfo: ${discordId}`);
@@ -168,11 +169,22 @@ const getEditor = async (message) => {
   );
 };
 
+const memberRestore = async (memberJson) => {
+  let count = 0;
+  for (let key in memberJson) {
+    const member = memberUtil.restoreToSys(memberJson[key]);
+    await memberModel.memberCreate(member);
+    count++;
+  }
+  return count;
+};
+
 const memberService = {
   apply,
   setTmpMember,
   getMemberInfo,
   getEditor,
+  memberRestore,
 };
 
 export default memberService;

@@ -1,4 +1,4 @@
-const target = "apply";
+const target = "restore";
 
 import(`./test/${target}.js`)
   .then((module) => {

@@ -62,9 +62,36 @@ const disToSys = (disMember) => {
   return member;
 };
 
+const restoreToSys = (restoreData) => {
+  console.log(`restoreToSys input ${JSON.stringify(restoreData, null, 2)}`);
+  let member = {
+    id: restoreData.DiscordId,
+    name: restoreData.Name,
+    nick: restoreData.Nick,
+    username: restoreData.Username,
+    roles: restoreData.Roles,
+    eoa: restoreData.Eoa,
+    icon: restoreData.Icon,
+    join: restoreData.Join,
+  };
+
+  if (member.eoa == null) {
+    member.eoa = "";
+  }
+  if (member.nick == null) {
+    member.nick = "";
+  }
+  if (member.roles.length == 0) {
+    member.roles = ["0"];
+  }
+  console.log(`restoreToSys out ${JSON.stringify(member, null, 2)}`);
+  return member;
+};
+
 const memberUtil = {
   dynToSys,
   disToSys,
+  restoreToSys,
 };
 
 export default memberUtil;

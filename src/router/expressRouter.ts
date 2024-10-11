@@ -1,13 +1,16 @@
 import express from "express";
 import { CONST } from "../common/const.js";
+import { UI } from "../common/ui.js";
 import memberModel from "../model/memberModel.js";
 import shopModel from "../model/shopModel.js";
 import itemModel from "../model/itemModel.js";
 import util from "../common/util.js";
 import discordService from "../service/discordService.js";
+import memberService from "../service/memberService.js";
 
 const expressRouter = express.Router();
 expressRouter.use(express.json());
+expressRouter.use(express.urlencoded({ extended: true }));
 
 expressRouter.get("/", async (_, res) => {
   const result = "<h1>" + CONST.SERVER_INFO + " ver." + CONST.VERSION + "</h1>";
@@ -22,6 +25,22 @@ expressRouter.post("/regist", async (req, res) => {
     body.secret
   );
   res.send(result);
+});
+
+expressRouter.get("/member", async (req, res) => {
+  const response = await memberModel.getAllList();
+  res.send(util.dynamoDbToJson(response));
+});
+
+expressRouter.get("/member/restore", async (req, res) => {
+  const body = UI.MEMBER_RESTORE;
+  res.send(body);
+});
+
+expressRouter.post("/member/restore", async (req, res) => {
+  const memberJson = JSON.parse(req.body.restoredata);
+  const result = await memberService.memberRestore(memberJson);
+  res.send({ mode: "member_restore", member_list: result });
 });
 
 expressRouter.get("/member/:eoa", async (req, res) => {

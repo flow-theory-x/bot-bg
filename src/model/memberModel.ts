@@ -31,14 +31,17 @@ const getMemberRaw = async (discordId) => {
 };
 
 const memberCreate = async (member) => {
-  console.log("dynamo メンバー登録");
   let params = crud.write;
   params.Item.DiscordId.S = String(member.id);
+  params.Item.Nick.S = member.nick;
   params.Item.Name.S = member.name;
   params.Item.Username.S = member.username;
   params.Item.Icon.S = member.icon;
   params.Item.Join.S = member.join;
-  params.Item.Nick.S = member.nick;
+  params.Item.Eoa.S = member.eoa;
+  if (member.eoa == null) {
+    params.Item.Eoa.S = "";
+  }
   if (member.nick == null) {
     params.Item.Nick.S = "";
   }
