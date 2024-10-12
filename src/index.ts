@@ -8,6 +8,7 @@ import registController from "./controller/registController.js";
 import editorController from "./controller/editorController.js";
 import getkeyController from "./controller/getkeyController.js";
 import applyController from "./controller/applyController.js";
+import memberSbtController from "./controller/memberSbtController.js";
 import discordService from "./service/discordService.js";
 import expressRouter from "./router/expressRouter.js"; // ルートのインポート
 
@@ -75,6 +76,9 @@ export const handler = async (event, context) => {
               break;
             case "apply":
               await applyController.connect(req);
+              break;
+            case "member-sbt":
+              await memberSbtController.connect(req);
               break;
           }
           break;

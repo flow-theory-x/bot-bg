@@ -177,6 +177,32 @@ const memberRestore = async (memberJson) => {
   }
   return count;
 };
+const memberSbtRequest = async (message) => {
+  if (!message.member.roles.includes(CONST.DISCORD_HOLDER_ROLL_ID)) {
+    return "会員証の発行にはHolder ＆FAN ロールが必要です。";
+  }
+  const eoa = await memberModel.discordId2eoa(message.member.user.id);
+  const secret = util.generateRandomString(12);
+  await memberModel.memberSetSecret(
+    message.member.user.id,
+    eoa,
+    secret,
+    message.member.roles
+  );
+
+  const sendMes =
+    "会員証SBT発行はこちらから \n EOA : " +
+    eoa +
+    "\n\n以下のURLにメタマスクをインストールしたブラウザでアクセスし、ウォレットを接続して会員証を発行してください。" +
+    "\nURL: " +
+    CONST.PROVIDER_URL +
+    "/membersbt/" +
+    message.member.user.id +
+    "/" +
+    secret;
+
+  return sendMes;
+};
 
 const memberService = {
   apply,
@@ -184,6 +210,7 @@ const memberService = {
   getMemberInfo,
   getEditor,
   memberRestore,
+  memberSbtRequest,
 };
 
 export default memberService;
