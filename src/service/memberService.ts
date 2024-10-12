@@ -141,6 +141,7 @@ const setTmpMember = async (message) => {
       secret;
   } else {
     console.log("EXIST" + JSON.stringify(member, null, 2));
+    sendMessage = `あなたのDiscordには既に ${eoa} が紐づいています\n解除するには以下のURLにメタマスクをインストールしたブラウザでアクセスしてください\n${CONST.PROVIDER_URL}/disconnect/`;
   }
   return sendMessage;
 };

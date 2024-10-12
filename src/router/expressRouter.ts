@@ -8,6 +8,7 @@ import util from "../common/util.js";
 import memberUtil from "../common/memberUtli.js";
 import discordService from "../service/discordService.js";
 import memberService from "../service/memberService.js";
+import donateService from "../service/donateService.js";
 
 const expressRouter = express.Router();
 expressRouter.use(express.json());
@@ -127,6 +128,25 @@ expressRouter.post("/item/update/:id", async (req, res) => {
   body.id = req.params.id;
   const response = await itemModel.createItem(body);
   res.send(memberUtil.dynToSys(response));
+});
+
+expressRouter.get("/metadata/member/:id", async (req, res) => {
+  const member: any = await memberModel.getMember(req.params.id);
+  const donateBalance = await donateService.getDonate("balance", member.Eoa);
+  const totalDonate = await donateService.getDonate(
+    "totaldonations",
+    member.Eoa
+  );
+  const result = {
+    id: req.params.id,
+    name: member.Name,
+    eoa: member.Eoa,
+    roles: Array.from(member.Roles),
+    icon: member.Icon,
+    donate: donateBalance,
+    totaldonate: totalDonate,
+  };
+  res.send(result);
 });
 
 expressRouter.post("/transrequest", async (req, res) => {

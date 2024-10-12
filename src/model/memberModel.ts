@@ -40,6 +40,7 @@ const memberCreate = async (member) => {
   params.Item.Icon.S = member.icon;
   params.Item.Join.S = member.join;
   params.Item.Eoa.S = member.eoa;
+  params.Item.DeleteFlag.BOOL = "false";
   if (member.eoa == null) {
     params.Item.Eoa.S = "";
   }
@@ -70,7 +71,7 @@ const memberUpdate = async (member) => {
   let params = crud.update;
   params.Key.DiscordId.S = String(member.id);
   params.UpdateExpression =
-    "SET #Name = :Name, #Nick = :Nick, #Username = :Username, #Icon = :Icon, #Roles= :roles, #Updated = :updated";
+    "SET #Name = :Name, #Nick = :Nick, #Username = :Username, #Icon = :Icon, #Roles= :roles, #Updated = :updated, #DeleteFlag = :deleteFlag";
   params.ExpressionAttributeNames = {
     "#Name": "Name",
     "#Nick": "Nick",
@@ -78,6 +79,7 @@ const memberUpdate = async (member) => {
     "#Icon": "Icon",
     "#Roles": "Roles",
     "#Updated": "Updated",
+    "#DeleteFlag": "DeleteFlag",
   } as object;
   params.ExpressionAttributeValues = {
     ":Name": { S: member.name } as object,
@@ -86,6 +88,7 @@ const memberUpdate = async (member) => {
     ":Icon": { S: member.icon } as object,
     ":roles": { SS: member.roles } as object,
     ":updated": { S: new Date(new Date().getTime()) } as object,
+    ":deleteFlag": { BOOL: "false" } as object,
   };
 
   /*
