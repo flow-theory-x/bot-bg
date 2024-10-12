@@ -29,6 +29,12 @@ expressRouter.post("/regist", async (req, res) => {
   res.send(result);
 });
 
+expressRouter.post("/disconnect", async (req, res) => {
+  const body = req.body;
+  const result = await memberModel.memberDisconnect(body.discordId, body.eoa);
+  res.send(result);
+});
+
 expressRouter.get("/member", async (req, res) => {
   const response = await memberModel.getAllList();
   res.send(memberUtil.dynToSys(response));

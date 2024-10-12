@@ -303,6 +303,25 @@ const discordId2eoa = async (discordId) => {
   }
 };
 
+const memberDisconnect = async (id: String, eoa: String) => {
+  try {
+    const member: any = await getMember(id);
+    console.error(`delete Member ${JSON.stringify(member)} ${eoa}`);
+    if (util.isAddressesEqual(String(member.Eoa), String(eoa))) {
+      let params = crud.delete;
+      params.Key.DiscordId.S = String(id);
+      await dynamoService.deleteItem(params);
+      return {
+        message: "deleted eoa:" + member.Eoa + " id:" + member.DiscordId,
+        result: true,
+      };
+    }
+  } catch (error) {
+    console.error(`delete error ${JSON.stringify(error)}`);
+    return { message: "エラーが発生しました", result: false };
+  }
+};
+
 const memberModel = {
   getMemberRaw,
   getAllList,
@@ -318,5 +337,6 @@ const memberModel = {
   memberSetSecret,
   memberSetEoa,
   discordId2eoa,
+  memberDisconnect,
 };
 export default memberModel;

@@ -180,7 +180,7 @@ const memberRestore = async (memberJson) => {
 };
 const memberSbtRequest = async (message) => {
   if (!message.member.roles.includes(CONST.DISCORD_HOLDER_ROLL_ID)) {
-    return "会員証の発行にはHolder ＆FAN ロールが必要です。";
+    return `会員証の発行には ${CONST.DISCORD_HOLDER_ROLL_NAME} ロールが必要です。\nBizenDAO公式NFTを持っている場合は /apply を実行し確認してください。`;
   }
   const eoa = await memberModel.discordId2eoa(message.member.user.id);
   const secret = util.generateRandomString(12);
