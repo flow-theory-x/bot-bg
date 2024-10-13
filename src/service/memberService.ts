@@ -75,11 +75,11 @@ const apply = async (message) => {
   if (tokenCount > 0) {
     await discordService.setRoleId(
       message.member.user.id,
-      CONST.DISCORD_HOLDER_ROLL_ID
+      CONST.DISCORD_HOLDER_ROLE_ID
     );
     responseMes =
       "あなたは有効なNFTの所有者です。\n" +
-      `${CONST.DISCORD_HOLDER_ROLL_NAME} ロールが付与されました。\n` +
+      `${CONST.DISCORD_HOLDER_ROLE_NAME} ロールが付与されました。\n` +
       "あなたの持っているNFT\n" +
       responseMes;
   } else {
@@ -179,8 +179,8 @@ const memberRestore = async (memberJson) => {
   return count;
 };
 const memberSbtRequest = async (message) => {
-  if (!message.member.roles.includes(CONST.DISCORD_HOLDER_ROLL_ID)) {
-    return `会員証の発行には ${CONST.DISCORD_HOLDER_ROLL_NAME} ロールが必要です。\nBizenDAO公式NFTを持っている場合は /apply を実行し確認してください。`;
+  if (!message.member.roles.includes(CONST.DISCORD_HOLDER_ROLE_ID)) {
+    return `会員証の発行には ${CONST.DISCORD_HOLDER_ROLE_NAME} ロールが必要です。\nBizenDAO公式NFTを持っている場合は /apply を実行し確認してください。`;
   }
   const eoa = await memberModel.discordId2eoa(message.member.user.id);
   const secret = util.generateRandomString(12);

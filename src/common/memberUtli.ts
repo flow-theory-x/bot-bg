@@ -65,7 +65,7 @@ const disToSys = (disMember) => {
 const restoreToSys = (restoreData) => {
   console.log(`restoreToSys input ${JSON.stringify(restoreData, null, 2)}`);
   let member = {
-    id: restoreData.DiscordId,
+    id: String(restoreData.DiscordId),
     name: restoreData.Name,
     nick: restoreData.Nick,
     username: restoreData.Username,

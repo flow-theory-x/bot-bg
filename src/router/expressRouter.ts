@@ -9,13 +9,16 @@ import memberUtil from "../common/memberUtli.js";
 import discordService from "../service/discordService.js";
 import memberService from "../service/memberService.js";
 import donateService from "../service/donateService.js";
+import dynamoService from "../service/dynamoService.js";
 
 const expressRouter = express.Router();
 expressRouter.use(express.json());
 expressRouter.use(express.urlencoded({ extended: true }));
 
 expressRouter.get("/", async (_, res) => {
-  const result = "<h1>" + CONST.SERVER_INFO + " ver." + CONST.VERSION + "</h1>";
+  const result = `<h1>${CONST.SERVER_INFO} ver. ${CONST.VERSION}</h1>
+  <p>DEPLOY:${CONST.DEPLOY_DATETIME}</p>
+  <p>TABLES:${CONST.DYNAMO_TABLE_PREFIX}</p>`;
   res.send(result);
 });
 
@@ -27,6 +30,15 @@ expressRouter.post("/regist", async (req, res) => {
     body.secret
   );
   res.send(result);
+});
+
+expressRouter.get("/createtables", async (_, res) => {
+  await dynamoService.dynamoCreateTable("role");
+  await dynamoService.dynamoCreateTable("member");
+  await dynamoService.dynamoCreateTable("item");
+  await dynamoService.dynamoCreateTable("shop");
+  await dynamoService.dynamoCreateTable("content");
+  res.send("createTables");
 });
 
 expressRouter.post("/disconnect", async (req, res) => {

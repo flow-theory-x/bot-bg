@@ -8,13 +8,17 @@ mkdir ../dist
 
 pwd
 if [ $1 = 'stg' ]; then
-	LAMBDA_FUNCTION_NAME=flow-bg-stg
-	echo 'Zip for STG'
+	LAMBDA_FUNCTION_NAME=stg_bg
+	cp custom_settings/bg_prd.env ../dist/.env
+	filename="prd_upload.zip"
+	rm ${dir}/../${filename}
 	exit
 elif [ $1 = 'prd' ]; then
-	LAMBDA_FUNCTION_NAME=flow-bg-prd
+	LAMBDA_FUNCTION_NAME=bizendao-bg-prd
+	cp custom_settings/bg_prd.env ../dist/.env
+	filename="prd_upload.zip"
+	rm ${dir}/../${filename}
 	echo 'Zip for PRD'
-	exit
 elif [ $1 = 'flow' ]; then
 	LAMBDA_FUNCTION_NAME=flow-bg
 	cp custom_settings/bg_flow.env ../dist/.env

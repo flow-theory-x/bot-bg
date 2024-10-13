@@ -10,8 +10,14 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { CONST } from "../common/const.js";
+import { CRUD } from "../crud/crud.js";
 
 const client = new DynamoDBClient({ region: CONST.DYNAMO_REGION });
+
+const dynamoCreateTable = async (tableName) => {
+  let params = CRUD[tableName].create;
+  dynamoService.createTable(params);
+};
 
 const createTable = async (params) => {
   const command = new CreateTableCommand(params);
@@ -154,6 +160,7 @@ const dynamoService = {
   getAllItems,
   getDisplayData,
   getMaxId,
+  dynamoCreateTable,
 };
 
 export default dynamoService;
