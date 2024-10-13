@@ -149,6 +149,7 @@ const systemController = {
   connect,
   discordList,
   dynamoList,
+  dynamoMemberUpdate,
 };
 
 export default systemController;

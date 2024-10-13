@@ -10,6 +10,8 @@ import discordService from "../service/discordService.js";
 import memberService from "../service/memberService.js";
 import donateService from "../service/donateService.js";
 import dynamoService from "../service/dynamoService.js";
+import shopService from "../service/shopService.js";
+import systemController from "../controller/systemController.js";
 
 const expressRouter = express.Router();
 expressRouter.use(express.json());
@@ -37,7 +39,6 @@ expressRouter.get("/createtables", async (_, res) => {
   await dynamoService.dynamoCreateTable("member");
   await dynamoService.dynamoCreateTable("item");
   await dynamoService.dynamoCreateTable("shop");
-  await dynamoService.dynamoCreateTable("content");
   res.send("createTables");
 });
 
@@ -50,6 +51,12 @@ expressRouter.post("/disconnect", async (req, res) => {
 expressRouter.get("/member", async (req, res) => {
   const response = await memberModel.getAllList();
   res.send(memberUtil.dynToSys(response));
+});
+
+expressRouter.get("/member/sync", async (req, res) => {
+  const body = `member sync ${CONST.DYNAMO_TABLE_PREFIX}`;
+  await systemController.dynamoMemberUpdate(CONST.DISCORD_DEVELOP_CHANNEL_ID);
+  res.send(body);
 });
 
 expressRouter.get("/member/restore", async (req, res) => {
@@ -71,6 +78,17 @@ expressRouter.get("/member/:eoa", async (req, res) => {
 expressRouter.get("/shop", async (_, res) => {
   const response = await shopModel.getAllList();
   res.send(memberUtil.dynToSys(response));
+});
+
+expressRouter.get("/shop/restore", async (req, res) => {
+  const body = UI.SHOP_RESTORE;
+  res.send(body);
+});
+
+expressRouter.post("/shop/restore", async (req, res) => {
+  const json = JSON.parse(req.body.restoredata);
+  const result = await shopService.shopRestore(json);
+  res.send({ mode: "shop_restore", shop_list: result });
 });
 
 expressRouter.get("/shop/id/:id", async (req, res) => {

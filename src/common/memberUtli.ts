@@ -67,7 +67,7 @@ const restoreToSys = (restoreData) => {
   let member = {
     id: String(restoreData.DiscordId),
     name: restoreData.Name,
-    nick: restoreData.Nick,
+    nick: restoreData.Nick ? restoreData.Nick : "",
     username: restoreData.Username,
     roles: restoreData.Roles,
     eoa: restoreData.Eoa,

@@ -29,12 +29,12 @@ const getAllList = async () => {
 
 const createItem = async (entity) => {
   let params = crud.write;
-  params.Item.Id.N = entity.id;
+  params.Item.Id.N = String(entity.id);
   params.Item.Name.S = entity.name;
   params.Item.Contract.S = entity.contract;
   params.Item.TokenId.S = entity.tokenid;
-  params.Item.Price.N = entity.price;
-  params.Item.Status.N = entity.status;
+  params.Item.Price.N = String(entity.price);
+  params.Item.Status.N = String(entity.status);
   params.Item.Json.S = entity.json;
   params.Item.Creator.S = entity.creator;
   params.Item.Link.S = entity.link;
@@ -78,7 +78,7 @@ const deleteItem = async (item) => {
       item.Name.S
   );
   let params = crud.delete;
-  params.Key.Id.N = item.Id.N;
+  params.Key.Id.N = String(item.Id.N);
   await dynamoService.deleteItem(params);
 };
 
@@ -92,7 +92,7 @@ const softDelete = async (item) => {
       item.Name.S
   );
   let params = crud.update;
-  params.Key.Id.N = item.Id.N;
+  params.Key.Id.N = String(item.Id.N);
   params.UpdateExpression = "SET DeleteFlag = :newVal";
   params.ExpressionAttributeValues = {
     ":newVal": { BOOL: true } as object,
