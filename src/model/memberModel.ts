@@ -176,10 +176,16 @@ const memberListUpdate = async (discordList, dynamoList) => {
   for (let key in dynamoList) {
     const member = dynamoList[key];
     if (member) {
-      const filteredItems = discordList.filter(
-        (item) => String(item.id) === String(member.DiscordId)
-      );
-      if (filteredItems.length == 0) {
+      const filteredItems = discordList.filter((item) => {
+        console.log(`dynamo:member ${String(item.id)}`);
+        console.log(`discord:member ${String(member.DiscordId)}`);
+        return String(item.id) === String(member.DiscordId);
+      });
+
+      console.log(`退会判定 ${JSON.stringify(filteredItems)}`);
+      console.log(`退会判定 ${filteredItems.length}`);
+      if (filteredItems.length != 1) {
+        console.log(`退会Member ${JSON.stringify(member)}`);
         delCnt++;
         if (CONST.DYNAMO_SOFT_DELETE == "true") {
           await memberModel.memberSoftDelete(member);
