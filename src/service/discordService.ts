@@ -187,16 +187,15 @@ const setRoleId = async (memberId, roleId) => {
 };
 
 const interResponse = async (responseMessage, message) => {
+  console.log(`message id&token:  ${JSON.stringify(message)}`);
   try {
-    await client.rest.post(
-      `/interactions/${message.id}/${message.token}/callback`,
+    // インタラクションに対するメッセージの編集
+    await client.rest.patch(
+      `/webhooks/${CONST.DISCORD_API_ID}/${message.token}/messages/@original`,
       {
         body: {
-          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            content: responseMessage,
-            flags: 64, // フラグ64はEphemeral（本人にしか見えない）メッセージを示す
-          },
+          content: responseMessage,
+          flags: 64, // Ephemeral (本人にしか見えない) メッセージ
         },
       }
     );
