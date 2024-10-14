@@ -32,7 +32,8 @@ const connect = async (req) => {
         "update\n" +
         "help";
   }
-  await discordService.sendDiscordResponse(sendMes, req.token, req.channel_id);
+  //await discordService.sendDiscordResponse(sendMes, req.token, req.channel_id);
+  await discordService.interResponse(sendMes, req);
 };
 
 const creatorController = {

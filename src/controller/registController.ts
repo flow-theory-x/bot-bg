@@ -6,7 +6,7 @@ import memberService from "../service/memberService.js";
 
 const connect = async (req) => {
   const sendMes = await memberService.setTmpMember(req);
-  await discordService.sendDiscordResponse(sendMes, req.token, "notResend");
+  await discordService.interResponse(sendMes, req);
 };
 
 const creatorController = {

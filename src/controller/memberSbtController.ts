@@ -6,11 +6,7 @@ import memberService from "../service/memberService.js";
 
 const connect = async (req) => {
   const sendMes = await memberService.memberSbtRequest(req);
-  await discordService.sendDiscordResponse(sendMes, req.token, "nosend");
-
-  //let sendMes = req.data.name + "を受け付けました\n";
-  //await discordService.sendDiscordResponse(sendMes, req.token, req.channel_id);
-  //await discordService.sendDiscordMessage(resultMes, req.channel_id);
+  await discordService.interResponse(sendMes, req);
 };
 
 const applyController = {

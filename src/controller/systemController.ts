@@ -66,8 +66,7 @@ const connect = async (req) => {
   } else {
     sendMes = req.data.name + "コマンドの実行には管理者権限が必要です。\n";
   }
-
-  await discordService.sendDiscordResponse(sendMes, req.token, req.channel_id);
+  await discordService.interResponse(sendMes, req);
 };
 
 const discordList = async () => {
