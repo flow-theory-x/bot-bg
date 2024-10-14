@@ -4,6 +4,7 @@ import { UI } from "../common/ui.js";
 import memberModel from "../model/memberModel.js";
 import shopModel from "../model/shopModel.js";
 import itemModel from "../model/itemModel.js";
+import roleModel from "../model/roleModel.js";
 import util from "../common/util.js";
 import memberUtil from "../common/memberUtli.js";
 import discordService from "../service/discordService.js";
@@ -168,6 +169,16 @@ expressRouter.post("/item/update/:id", async (req, res) => {
 
 expressRouter.get("/metadata/member/:id", async (req, res) => {
   const member: any = await memberModel.getMember(req.params.id);
+
+  const rolesData = await roleModel.getAllList();
+  const roleMap = rolesData.reduce((map, role) => {
+    map[role.Id.N] = role.Name.S;
+    return map;
+  }, {} as { [key: string]: string });
+
+  const roleIds = member.Roles;
+  const roleNames = roleIds.map((id) => roleMap[id]);
+
   const donateBalance = await donateService.getDonate("balance", member.Eoa);
   const totalDonate = await donateService.getDonate(
     "totaldonations",
@@ -177,8 +188,8 @@ expressRouter.get("/metadata/member/:id", async (req, res) => {
     id: req.params.id,
     name: member.Name,
     eoa: member.Eoa,
-    roles: Array.from(member.Roles),
     icon: member.Icon,
+    roles: roleNames,
     donate: donateBalance,
     totaldonate: totalDonate,
   };
