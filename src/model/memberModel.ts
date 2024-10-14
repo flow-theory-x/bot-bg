@@ -177,13 +177,9 @@ const memberListUpdate = async (discordList, dynamoList) => {
     const member = dynamoList[key];
     if (member) {
       const filteredItems = discordList.filter((item) => {
-        console.log(`dynamo:member ${String(item.id)}`);
-        console.log(`discord:member ${String(member.DiscordId)}`);
         return String(item.id) === String(member.DiscordId);
       });
 
-      console.log(`退会判定 ${JSON.stringify(filteredItems)}`);
-      console.log(`退会判定 ${filteredItems.length}`);
       if (filteredItems.length != 1) {
         console.log(`退会Member ${JSON.stringify(member)}`);
         delCnt++;

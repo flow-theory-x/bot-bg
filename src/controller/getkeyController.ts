@@ -6,7 +6,7 @@ import creatorService from "../service/creatorService.js";
 
 const connect = async (req) => {
   const sendMes = await creatorService.getKey(req);
-  await discordService.sendDiscordResponse(sendMes, req.token, req.channel_id);
+  await discordService.sendDiscordResponse(sendMes, req.token, "nosend");
 };
 
 const creatorController = {

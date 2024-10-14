@@ -9,55 +9,64 @@ import roleModel from "../model/roleModel.js";
 
 const connect = async (req) => {
   let sendMes = req.data.options[0].value + "を受け付けました\n";
-  switch (req.data.options[0].value) {
-    case "ver":
-      sendMes = messages.getVer(req);
-      break;
-    case "info":
-      sendMes = messages.getInfo(req);
-      break;
-    case "roleUpdate":
-      dynamoRoleUpdate(req.channel_id);
-      sendMes = "Sync Role Discord to Dynamo";
-      break;
-    case "memberUpdate":
-      dynamoMemberUpdate(req.channel_id);
-      sendMes = "Sync Member Discord to Dynamo";
-      break;
-    case "getDynamo":
-      sendMes = await dynamoList(req.channel_id);
-      console.log("getDynamo:" + sendMes);
-      break;
-    case "getDiscord":
-      sendDiscordList(req.channel_id);
-      sendMes = "getDiscordを受け付けました。";
-      break;
-    case "totalinfo":
-      sendMes += "\ntotal info: " + JSON.stringify(req, null, 2);
-      break;
-    case "createTables":
-      await dynamoCreateTable("role");
-      await dynamoCreateTable("member");
-      await dynamoCreateTable("item");
-      await dynamoCreateTable("shop");
-      await dynamoCreateTable("content");
-      sendMes = "CreateTablesを受け付けました。";
-      break;
-    case "help":
-    default:
-      sendMes =
-        "/system [option]\n" +
-        "ver\n" +
-        "info\n" +
-        "roleUpdate\n" +
-        "memberUpdate\n" +
-        "getDynamo\n" +
-        "getDiscord\n" +
-        "totalInfo\n" +
-        "createTable\n" +
-        "ver\n" +
-        "help";
+
+  if (
+    req.member.roles.includes(CONST.DISCORD_ADMIN_ROLE_ID) ||
+    req.member.roles.includes(CONST.DISCORD_MANAGER_ROLE_ID)
+  ) {
+    switch (req.data.options[0].value) {
+      case "ver":
+        sendMes = messages.getVer(req);
+        break;
+      case "info":
+        sendMes = messages.getInfo(req);
+        break;
+      case "roleUpdate":
+        dynamoRoleUpdate(req.channel_id);
+        sendMes = "Sync Role Discord to Dynamo";
+        break;
+      case "memberUpdate":
+        dynamoMemberUpdate(req.channel_id);
+        sendMes = "Sync Member Discord to Dynamo";
+        break;
+      case "getDynamo":
+        sendMes = await dynamoList(req.channel_id);
+        console.log("getDynamo:" + sendMes);
+        break;
+      case "getDiscord":
+        sendDiscordList(req.channel_id);
+        sendMes = "getDiscordを受け付けました。";
+        break;
+      case "totalinfo":
+        sendMes += "\ntotal info: " + JSON.stringify(req, null, 2);
+        break;
+      case "createTables":
+        await dynamoCreateTable("role");
+        await dynamoCreateTable("member");
+        await dynamoCreateTable("item");
+        await dynamoCreateTable("shop");
+        await dynamoCreateTable("content");
+        sendMes = "CreateTablesを受け付けました。";
+        break;
+      case "help":
+      default:
+        sendMes =
+          "/system [option]\n" +
+          "ver\n" +
+          "info\n" +
+          "roleUpdate\n" +
+          "memberUpdate\n" +
+          "getDynamo\n" +
+          "getDiscord\n" +
+          "totalInfo\n" +
+          "createTable\n" +
+          "ver\n" +
+          "help";
+    }
+  } else {
+    sendMes = req.data.name + "コマンドの実行には管理者権限が必要です。\n";
   }
+
   await discordService.sendDiscordResponse(sendMes, req.token, req.channel_id);
 };
 
