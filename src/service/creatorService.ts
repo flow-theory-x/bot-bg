@@ -17,6 +17,7 @@ const getKey = async (message) => {
   const eoa = await memberModel.discordId2eoa(message.member.user.id);
   if (hashInfo.owner == eoa) {
     return (
+      "### getkey secret 通知 ###\n" +
       "secretkey : " +
       hashInfo.shortHash +
       "\nCreator : " +
