@@ -110,8 +110,8 @@ const sendDiscordResponse = async (message, mesToken, resendCh?) => {
     message = `バックグラウンドからの再送\nResent due to API delay over 3 sec.\n\n${message}`;
     if (resendCh != undefined) {
       sendDiscordMessage(message, resendCh);
-    } else if (resendCh == "nosend") {
-      console.log("nosendが指定されている場合送信しない");
+    } else if (resendCh == "notResend") {
+      console.log("notResendが指定されている場合送信しない");
     } else {
       sendDiscordMessage(message, CONST.DISCORD_DEFAULT_CHANNEL_ID);
     }
