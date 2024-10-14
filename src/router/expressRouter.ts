@@ -50,7 +50,7 @@ expressRouter.post("/disconnect", async (req, res) => {
 
 expressRouter.get("/member", async (req, res) => {
   const response = await memberModel.getAllList();
-  res.send(memberUtil.dynToSys(response));
+  res.send(response);
 });
 
 expressRouter.get("/member/sync", async (req, res) => {

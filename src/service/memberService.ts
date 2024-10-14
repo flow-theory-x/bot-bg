@@ -41,52 +41,56 @@ const getMemberInfo = async (discordId) => {
 };
 
 const apply = async (message) => {
-  const eoa = await memberModel.discordId2eoa(message.member.user.id);
-  const ownlist = await ownerService.getOwnByEoa(eoa);
   let responseMes = "";
-  let tokenCount = 0;
+  try {
+    const eoa = await memberModel.discordId2eoa(message.member.user.id);
+    const ownlist = await ownerService.getOwnByEoa(eoa);
+    let tokenCount = 0;
 
-  if (ownlist.nftList.length > 0) {
-    responseMes = responseMes + "NFT LIST\n";
-    for (let key in ownlist.nftList) {
-      tokenCount++;
-      responseMes =
-        responseMes +
-        ownlist.nftList[key][0] +
-        ":" +
-        ownlist.nftList[key][1] +
-        " tokens\n";
+    if (ownlist.nftList.length > 0) {
+      responseMes = responseMes + "NFT LIST\n";
+      for (let key in ownlist.nftList) {
+        tokenCount++;
+        responseMes =
+          responseMes +
+          ownlist.nftList[key][0] +
+          ":" +
+          ownlist.nftList[key][1] +
+          " tokens\n";
+      }
     }
-  }
 
-  if (ownlist.sbtList.length > 0) {
-    responseMes = responseMes + "SBT LIST\n";
-    for (let key in ownlist.sbtList) {
-      tokenCount++;
-      responseMes =
-        responseMes +
-        ownlist.sbtList[key][0] +
-        ":" +
-        ownlist.sbtList[key][1] +
-        " tokens\n";
+    if (ownlist.sbtList.length > 0) {
+      responseMes = responseMes + "SBT LIST\n";
+      for (let key in ownlist.sbtList) {
+        tokenCount++;
+        responseMes =
+          responseMes +
+          ownlist.sbtList[key][0] +
+          ":" +
+          ownlist.sbtList[key][1] +
+          " tokens\n";
+      }
     }
-  }
 
-  if (tokenCount > 0) {
-    await discordService.setRoleId(
-      message.member.user.id,
-      CONST.DISCORD_HOLDER_ROLE_ID
-    );
-    responseMes =
-      "あなたは有効なNFTの所有者です。\n" +
-      `${CONST.DISCORD_HOLDER_ROLE_NAME} ロールが付与されました。\n` +
-      "あなたの持っているNFT\n" +
-      responseMes;
-  } else {
-    responseMes = "あなたは有効なNFTを持っていません";
-  }
+    if (tokenCount > 0) {
+      await discordService.setRoleId(
+        message.member.user.id,
+        CONST.DISCORD_HOLDER_ROLE_ID
+      );
+      responseMes =
+        "あなたは有効なNFTの所有者です。\n" +
+        `${CONST.DISCORD_HOLDER_ROLE_NAME} ロールが付与されました。\n` +
+        "あなたの持っているNFT\n" +
+        responseMes;
+    } else {
+      responseMes = `あなたは有効なNFTを持っていません\nYou don't have available NFT`;
+    }
 
-  memberModel.memberUpdateForMes(message);
+    memberModel.memberUpdateForMes(message);
+  } catch (e) {
+    responseMes = `有効なNFTを持っていません\nYou don't have available NFT`;
+  }
   return responseMes;
 };
 
