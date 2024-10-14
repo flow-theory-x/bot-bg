@@ -4,6 +4,8 @@ import { sendApi } from "../common/sendApi.js";
 import { setTimeout } from "timers/promises";
 import memberUtil from "../common/memberUtli.js";
 import { Client, GatewayIntentBits } from "discord.js";
+import { InteractionResponseType } from "discord-interactions";
+
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 });
@@ -179,10 +181,28 @@ const getGuildRoles = async (guildId, retry = 0) => {
 };
 
 const setRoleId = async (memberId, roleId) => {
-  // console.log(`apply check memberId:${memberId} roleId${roleId}`);
   const guild = await client.guilds.fetch(CONST.DISCORD_GUILD_ID);
   const member = await guild.members.fetch(memberId);
   member.roles.add(roleId);
+};
+
+const interResponse = async (responseMessage, message) => {
+  try {
+    await client.rest.post(
+      `/interactions/${message.id}/${message.token}/callback`,
+      {
+        body: {
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: responseMessage,
+            flags: 64, // フラグ64はEphemeral（本人にしか見えない）メッセージを示す
+          },
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Error sending interaction response:", error);
+  }
 };
 
 const discordService = {
@@ -193,6 +213,7 @@ const discordService = {
   getDisplayData,
   getGuildRoles,
   setRoleId,
+  interResponse,
 };
 
 export default discordService;
