@@ -176,7 +176,7 @@ expressRouter.get("/metadata/member/:id", async (req, res) => {
     return map;
   }, {} as { [key: string]: string });
 
-  const roleIds = member.Roles;
+  const roleIds = member.Roles.sort();
   const roleNames = roleIds.map((id) => roleMap[id]);
 
   const donateBalance = await donateService.getDonate("balance", member.Eoa);
