@@ -77,6 +77,12 @@ expressRouter.get("/member/:eoa", async (req, res) => {
 });
 
 expressRouter.get("/shop", async (_, res) => {
+  const response = await shopModel.getList();
+  console.log(`shop list ${JSON.stringify(response)}`);
+  res.send(memberUtil.dynToSys(response.Items));
+});
+
+expressRouter.get("/shop/all", async (_, res) => {
   const response = await shopModel.getAllList();
   res.send(memberUtil.dynToSys(response));
 });
@@ -129,6 +135,11 @@ expressRouter.post("/shop/update/:id", async (req, res) => {
 });
 
 expressRouter.get("/item", async (_, res) => {
+  const response = await itemModel.getList();
+  res.send(memberUtil.dynToSys(response.Items));
+});
+
+expressRouter.get("/item/all", async (_, res) => {
   const response = await itemModel.getAllList();
   res.send(memberUtil.dynToSys(response));
 });
@@ -165,6 +176,11 @@ expressRouter.post("/item/update/:id", async (req, res) => {
   body.id = req.params.id;
   const response = await itemModel.createItem(body);
   res.send(memberUtil.dynToSys(response));
+});
+
+expressRouter.get("/role", async (_, res) => {
+  const response = await roleModel.getList();
+  res.send(memberUtil.dynToSys(response.Items));
 });
 
 expressRouter.get("/metadata/member/:id", async (req, res) => {

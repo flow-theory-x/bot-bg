@@ -19,6 +19,15 @@ const getItem = async (id) => {
 
 const getList = async () => {
   let params = crud.query;
+  params.FilterExpression = "#DeleteFlag = :DeleteFlag";
+  params.ExpressionAttributeNames = {
+    "#PartitionName": "PartitionName",
+    "#DeleteFlag": "DeleteFlag",
+  } as object;
+  params.ExpressionAttributeValues = {
+    ":PartitionName": { S: crud.partitionName },
+    ":DeleteFlag": { BOOL: false },
+  } as object;
   const result = await dynamoService.query(params);
   return result;
 };
@@ -68,76 +77,23 @@ const updateItem = async (item) => {
   await dynamoService.updateItem(params);
 };
 
-const deleteItem = async (item) => {
-  console.log(
-    "HARD DELETE " +
-      crud.tableName +
-      " ID:" +
-      item.Id.N +
-      " name:" +
-      item.Name.S
-  );
+const deleteItem = async (id) => {
   let params = crud.delete;
-  params.Key.Id.N = String(item.Id.N);
+  params.Key.Id.N = String(id);
   await dynamoService.deleteItem(params);
 };
 
-const softDelete = async (item) => {
-  console.log(
-    "SOFT DELETE " +
-      crud.tableName +
-      " ID:" +
-      item.Id.N +
-      " name:" +
-      item.Name.S
-  );
+const softDelete = async (id) => {
   let params = crud.update;
-  params.Key.Id.N = String(item.Id.N);
-  params.UpdateExpression = "SET DeleteFlag = :newVal";
+  params.Key.Id.N = String(id);
+  params.UpdateExpression = "SET #DeleteFlag = :newVal";
+  params.ExpressionAttributeNames = {
+    "#DeleteFlag": "DeleteFlag",
+  } as object;
   params.ExpressionAttributeValues = {
     ":newVal": { BOOL: true } as object,
   };
   await dynamoService.updateItem(params);
-};
-
-const listUpdate = async (discordList, dynamoList) => {
-  let addCnt = 0;
-  let updateCnt = 0;
-  let delCnt = 0;
-  for (let key in discordList) {
-    const discordItem = discordList[key];
-    const filteredItems = dynamoList.filter(
-      (item) => String(item.Id.N) === String(discordItem.id)
-    );
-    if (filteredItems.length == 0) {
-      addCnt++;
-      await createItem(discordItem);
-    } else {
-      if (discordItem.name !== filteredItems[0].Name.S) {
-        updateCnt++;
-        await updateItem(discordItem);
-      }
-    }
-  }
-
-  for (let key in dynamoList) {
-    const dynamoItem = dynamoList[key];
-    if (dynamoItem) {
-      const filteredItems = discordList.filter(
-        (item) => String(item.id) === String(dynamoItem.Id.N)
-      );
-      if (filteredItems.length == 0) {
-        delCnt++;
-        if (CONST.DYNAMO_SOFT_DELETE == "true") {
-          await softDelete(dynamoItem);
-        } else {
-          await deleteItem(dynamoItem);
-        }
-      }
-    }
-  }
-  console.log("dis:" + discordList.length + " dyn:" + dynamoList.length);
-  console.log("add:" + addCnt + " update:" + updateCnt + " del:" + delCnt);
 };
 
 const getItemByEoa = async (eoa) => {
@@ -168,7 +124,6 @@ const roleModel = {
   updateItem,
   deleteItem,
   softDelete,
-  listUpdate,
   getItemByEoa,
 };
 export default roleModel;

@@ -13,6 +13,15 @@ const getItem = async (id) => {
 
 const getList = async () => {
   let params = crud.query;
+  params.FilterExpression = "#DeleteFlag = :DeleteFlag";
+  params.ExpressionAttributeNames = {
+    "#PartitionName": "PartitionName",
+    "#DeleteFlag": "DeleteFlag",
+  } as object;
+  params.ExpressionAttributeValues = {
+    ":PartitionName": { S: crud.partitionName },
+    ":DeleteFlag": { BOOL: false },
+  } as object;
   const result = await dynamoService.query(params);
   return result;
 };
@@ -55,31 +64,18 @@ const updateItem = async (item) => {
 };
 
 const deleteItem = async (item) => {
-  console.log(
-    "HARD DELETE " +
-      crud.tableName +
-      " ID:" +
-      item.Id.N +
-      " name:" +
-      item.Name.S
-  );
   let params = crud.delete;
   params.Key.Id.N = item.Id.N;
   await dynamoService.deleteItem(params);
 };
 
 const softDelete = async (item) => {
-  console.log(
-    "SOFT DELETE " +
-      crud.tableName +
-      " ID:" +
-      item.Id.N +
-      " name:" +
-      item.Name.S
-  );
   let params = crud.update;
   params.Key.Id.N = item.Id.N;
-  params.UpdateExpression = "SET DeleteFlag = :newVal";
+  params.UpdateExpression = "SET #DeleteFlag = :newVal";
+  params.ExpressionAttributeNames = {
+    "#DeleteFlag": "DeleteFlag",
+  } as object;
   params.ExpressionAttributeValues = {
     ":newVal": { BOOL: true } as object,
   };
