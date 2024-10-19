@@ -200,6 +200,11 @@ expressRouter.get("/metadata/member/:id", async (req, res) => {
     "totaldonations",
     member.Eoa
   );
+
+  if (member.Nick != "") {
+    member.Name = member.Nick;
+  }
+
   const result = {
     id: req.params.id,
     name: member.Name,
