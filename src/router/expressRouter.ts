@@ -72,7 +72,10 @@ expressRouter.post("/member/restore", async (req, res) => {
 });
 
 expressRouter.get("/member/:eoa", async (req, res) => {
-  const response = await memberModel.getMemberByEoa(req.params.eoa);
+  const response: any = await memberModel.getMemberByEoa(req.params.eoa);
+  if (response.Nick != "") {
+    response.Name = response.Nick;
+  }
   res.send(response);
 });
 
